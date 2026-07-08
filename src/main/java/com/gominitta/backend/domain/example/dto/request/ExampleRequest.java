@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 public class ExampleRequest {
 
-    @NotBlank
-    private String name;
+	@NotBlank
+	private String name;
 }

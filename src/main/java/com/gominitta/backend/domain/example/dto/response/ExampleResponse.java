@@ -1,6 +1,7 @@
 package com.gominitta.backend.domain.example.dto.response;
 
 import com.gominitta.backend.domain.example.entity.Example;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,13 +9,13 @@ import lombok.Getter;
 @Builder
 public class ExampleResponse {
 
-    private Long id;
-    private String name;
+	private Long id;
+	private String name;
 
-    public static ExampleResponse from(Example example) {
-        return ExampleResponse.builder()
-                .id(example.getId())
-                .name(example.getName())
-                .build();
-    }
+	public static ExampleResponse from(Example example) {
+		return ExampleResponse.builder()
+			.id(example.getId())
+			.name(example.getName())
+			.build();
+	}
 }
