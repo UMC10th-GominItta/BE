@@ -1,4 +1,4 @@
-package com.gominitta.backend.domain.example.exception;
+package com.gominitta.backend.domain.dailymessage.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -9,9 +9,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ExampleErrorCode implements BaseErrorCode {
+public enum DailyMessageErrorCode implements BaseErrorCode {
 
-	EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_404", "예제를 찾을 수 없습니다.");
+	// 404 Not Found
+	DAILY_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "DM_40401", "오늘의 한마디를 찾을 수 없습니다.");
 
 	private final HttpStatus status;
 	private final String code;

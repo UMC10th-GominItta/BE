@@ -1,6 +1,6 @@
-package com.gominitta.backend.domain.example.entity;
+package com.gominitta.backend.domain.dailymessage.entity;
 
-import com.gominitta.backend.global.common.entity.BaseEntity;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,25 +9,27 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "example")
+@Table(name = "daily_messages")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Example extends BaseEntity {
+public class DailyMessage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "daily_messages_id")
 	private Long id;
 
-	@Column(nullable = false)
-	private String name;
+	@Column(name = "content", length = 200)
+	private String content;
 
-	@Builder
-	private Example(String name) {
-		this.name = name;
+	@Column(name = "assigned_at")
+	private LocalDateTime assignedAt;
+
+	public void assign() {
+		this.assignedAt = LocalDateTime.now();
 	}
 }
