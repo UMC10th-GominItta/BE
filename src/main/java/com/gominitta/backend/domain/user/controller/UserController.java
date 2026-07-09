@@ -30,7 +30,6 @@ public class UserController {
 
 	private final UserService userService;
 
-	// TODO: JWT 구현 시 활성화 - 현재 JWT 미구현으로 SecurityUtil.getCurrentUserId() 호출 시 UNAUTHORIZED 발생
 	@Operation(
 		summary = "홈 조회",
 		description = "로그인한 유저의 홈 화면 데이터를 조회합니다. 유저 정보, 오늘의 한마디, 가장 가까운 마음세션을 반환합니다.",
@@ -43,7 +42,6 @@ public class UserController {
 		return ResponseEntity.ok(ApiResponse.success("홈 조회에 성공하였습니다.", data));
 	}
 
-	// TODO: JWT 구현 시 활성화
 	@Operation(
 		summary = "내 프로필 조회",
 		description = "로그인한 유저의 프로필 정보(닉네임, 프로필 아이콘, 이메일)를 조회합니다.",
@@ -56,7 +54,6 @@ public class UserController {
 		return ResponseEntity.ok(ApiResponse.success("유저 정보 조회에 성공하였습니다.", data));
 	}
 
-	// TODO: JWT 구현 시 활성화
 	@Operation(
 		summary = "내 프로필 수정",
 		description = "닉네임 또는 프로필 아이콘을 수정합니다. 수정할 필드만 포함하면 됩니다. (null 필드는 변경되지 않음)",
@@ -71,7 +68,6 @@ public class UserController {
 		return ResponseEntity.ok(ApiResponse.success("유저 정보 수정에 성공하였습니다.", data));
 	}
 
-	// TODO: JWT 구현 시 활성화
 	@Operation(
 		summary = "회원 탈퇴",
 		description = "회원 탈퇴를 처리합니다. 실제 삭제가 아닌 소프트 딜리트(is_deleted=true)로 처리됩니다.",

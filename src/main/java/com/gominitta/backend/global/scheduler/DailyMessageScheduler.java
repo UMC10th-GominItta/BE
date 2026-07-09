@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gominitta.backend.domain.dailymessage.entity.DailyMessage;
 import com.gominitta.backend.domain.dailymessage.repository.DailyMessageRepository;
+import com.gominitta.backend.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,17 +18,19 @@ import lombok.RequiredArgsConstructor;
 public class DailyMessageScheduler {
 
 	private final DailyMessageRepository dailyMessageRepository;
+	private final UserRepository userRepository;
 
-	// 매일 00:00 실행: 그제 사용 메시지 초기화 + 오늘 메시지 사전 배정
+	// 매일 00:00 실행: 그제 사용 메시지 초기화 + 오늘 메시지 사전 배정 + 전체 유저 FK 업데이트
 	@Scheduled(cron = "0 0 0 * * *")
 	@Transactional
 	public void resetAndAssign() {
-		// 어제 시작 이전(= 그제 이전) assigned_at을 null로 초기화
 		LocalDateTime cutoff = LocalDate.now().minusDays(1).atStartOfDay();
 		dailyMessageRepository.resetOldMessages(cutoff);
 
-		// 오늘 메시지 사전 배정
-		dailyMessageRepository.findRandomAvailable()
-			.ifPresent(DailyMessage::assign);
+		dailyMessageRepository.findRandomAvailable().ifPresent(message -> {
+			message.assign();
+			dailyMessageRepository.saveAndFlush(message);
+			userRepository.updateDailyMessageForAll(message);
+		});
 	}
 }

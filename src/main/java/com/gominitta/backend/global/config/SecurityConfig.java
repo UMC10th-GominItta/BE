@@ -7,22 +7,48 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.gominitta.backend.global.auth.jwt.JwtAuthenticationEntryPoint;
+import com.gominitta.backend.global.auth.jwt.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+	private static final String[] PUBLIC_URLS = {
+		"/api/v1/auth/kakao",
+		"/api/v1/auth/refresh",
+		"/swagger-ui/**",
+		"/swagger-ui.html",
+		"/v3/api-docs/**"
+	};
+
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-		// todo: 프로젝트 init csrf / security 세팅 다시 켤 것
-		http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+		http
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+			.sessionManagement(session ->
+				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.exceptionHandling(ex ->
+				ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers(PUBLIC_URLS).permitAll()
+				.anyRequest().authenticated()
+			);
 
 		return http.build();
 	}
@@ -30,7 +56,6 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		// todo : 프론트도메인 / 3000 / 5173 세팅하기
 		config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
