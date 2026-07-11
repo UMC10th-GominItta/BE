@@ -3,6 +3,7 @@ package com.gominitta.backend.domain.user.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.global.auth.jwt.RefreshTokenStore;
 import com.gominitta.backend.domain.dailymessage.entity.DailyMessage;
 import com.gominitta.backend.domain.dailymessage.service.DailyMessageService;
 import com.gominitta.backend.domain.user.dto.request.UserUpdateRequestDTO;
@@ -22,6 +23,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final DailyMessageService dailyMessageService;
+	private final RefreshTokenStore refreshTokenRepository;
 
 	@Transactional(readOnly = true)
 	public UserProfileResponseDTO getMyProfile(Long userId) {
@@ -46,6 +48,7 @@ public class UserService {
 	@Transactional
 	public void deleteMe(Long userId) {
 		User user = findActiveUser(userId);
+		refreshTokenRepository.deleteByUserId(userId);
 		user.deactivate();
 	}
 
