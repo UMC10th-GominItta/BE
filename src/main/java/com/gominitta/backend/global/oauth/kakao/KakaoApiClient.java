@@ -44,7 +44,7 @@ public class KakaoApiClient {
 				.retrieve()
 				.body(KakaoTokenInfoDTO.class);
 
-			if (tokenInfo == null || !kakaoAppId.equals(tokenInfo.getAppId())) {
+			if (tokenInfo == null || kakaoAppId == null || !kakaoAppId.equals(tokenInfo.getAppId())) {
 				throw new GeneralException(AuthErrorCode.INVALID_TOKEN_ORIGIN);
 			}
 		} catch (GeneralException ex) {
