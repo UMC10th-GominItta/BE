@@ -78,17 +78,25 @@ public class MindSession extends BaseEntity {
 		return session;
 	}
 
+	public boolean isStartable() {
+		return this.status == SessionStatus.SCHEDULED || this.status == SessionStatus.INCOMPLETE;
+	}
+
+	public boolean isCompletable() {
+		return this.status == SessionStatus.IN_PROGRESS;
+	}
+
 	public void start() {
-		if (this.status == SessionStatus.COMPLETED) {
-			throw new IllegalStateException("이미 완료된 세션은 시작할 수 없습니다.");
+		if (!isStartable()) {
+			throw new IllegalStateException("시작할 수 없는 세션 상태입니다.");
 		}
 		this.status = SessionStatus.IN_PROGRESS;
 		this.startedAt = LocalDateTime.now();
 	}
 
 	public void complete(Integer emotionScoreAfter) {
-		if (this.status == SessionStatus.COMPLETED) {
-			throw new IllegalStateException("이미 완료된 세션입니다.");
+		if (!isCompletable()) {
+			throw new IllegalStateException("완료할 수 없는 세션 상태입니다.");
 		}
 		this.status = SessionStatus.COMPLETED;
 		this.completedAt = LocalDateTime.now();
