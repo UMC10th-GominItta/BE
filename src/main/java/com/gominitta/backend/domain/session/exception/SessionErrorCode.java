@@ -17,6 +17,9 @@ public enum SessionErrorCode implements BaseErrorCode {
 	// 401 Unauthorized
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SESSION_40101", "로그인이 필요한 요청입니다."),
 
+	// 403 Forbidden
+	FORBIDDEN(HttpStatus.FORBIDDEN, "SESSION_40301", "접근 권한이 없습니다."),
+
 	// 404 Not Found
 	SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "SESSION_40401", "세션을 찾을 수 없습니다."),
 
