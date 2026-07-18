@@ -1,5 +1,6 @@
 package com.gominitta.backend.domain.session.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.gominitta.backend.domain.session.dto.response.SessionStatusChangeResp
 import com.gominitta.backend.domain.session.entity.MindSession;
 import com.gominitta.backend.domain.session.entity.SessionRecord;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
+import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
 import com.gominitta.backend.domain.session.repository.SessionRecordRepository;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
@@ -75,6 +77,23 @@ public class SessionService {
 		}
 
 		return SessionStatusChangeResponseDTO.from(session);
+	}
+
+	/**
+	 * 걱정(worry) 예약 시 B 도메인이 자신의 트랜잭션 안에서 호출하는 내부 메서드. REST API로 노출되지 않음.
+	 * B가 넘긴 예약 시점 값을 세션에 스냅샷으로 저장해서, 이후 세션 조회는 B 재호출 없이 자체 컬럼으로 응답한다.
+	 */
+	@Transactional
+	public Long createSessionForWorry(Long worryId, Long userId, LocalDateTime scheduledStartAt,
+			LocalDateTime scheduledEndAt, String worryContent, ThemeCategory themeCategory,
+			Integer emotionScoreBefore) {
+		if (sessionRepository.existsByWorryId(worryId)) {
+			throw new GeneralException(SessionErrorCode.SESSION_ALREADY_EXISTS);
+		}
+
+		MindSession session = MindSession.create(userId, worryId, worryContent, themeCategory,
+			emotionScoreBefore, scheduledStartAt, scheduledEndAt);
+		return sessionRepository.save(session).getMindSessionId();
 	}
 
 	private SessionStatus parseTargetStatus(String status) {
