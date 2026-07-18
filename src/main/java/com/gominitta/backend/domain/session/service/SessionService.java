@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.session.dto.request.SessionStatusChangeRequestDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionDetailResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionListResponseDTO;
+import com.gominitta.backend.domain.session.dto.response.SessionStatusChangeResponseDTO;
 import com.gominitta.backend.domain.session.entity.MindSession;
 import com.gominitta.backend.domain.session.entity.SessionRecord;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
@@ -44,6 +46,49 @@ public class SessionService {
 
 		List<SessionRecord> records = sessionRecordRepository.findBySessionIdOrderByCreatedAtAsc(sessionId);
 		return SessionDetailResponseDTO.of(session, records);
+	}
+
+	@Transactional
+	public SessionStatusChangeResponseDTO changeStatus(
+		Long userId, Long sessionId, SessionStatusChangeRequestDTO request
+	) {
+		MindSession session = findSessionById(sessionId);
+		if (!session.getUserId().equals(userId)) {
+			throw new GeneralException(SessionErrorCode.FORBIDDEN);
+		}
+
+		SessionStatus targetStatus = parseTargetStatus(request.status());
+
+		if (targetStatus == SessionStatus.IN_PROGRESS) {
+			if (!session.isStartable()) {
+				throw new GeneralException(SessionErrorCode.INVALID_STATUS_TRANSITION);
+			}
+			session.start();
+		} else {
+			if (!session.isCompletable()) {
+				throw new GeneralException(SessionErrorCode.INVALID_STATUS_TRANSITION);
+			}
+			if (request.emotionScoreAfter() == null) {
+				throw new GeneralException(SessionErrorCode.EMOTION_SCORE_REQUIRED);
+			}
+			session.complete(request.emotionScoreAfter());
+		}
+
+		return SessionStatusChangeResponseDTO.from(session);
+	}
+
+	private SessionStatus parseTargetStatus(String status) {
+		SessionStatus parsed;
+		try {
+			parsed = SessionStatus.valueOf(status.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new GeneralException(SessionErrorCode.INVALID_STATUS_VALUE);
+		}
+
+		if (parsed != SessionStatus.IN_PROGRESS && parsed != SessionStatus.COMPLETED) {
+			throw new GeneralException(SessionErrorCode.INVALID_STATUS_VALUE);
+		}
+		return parsed;
 	}
 
 	private MindSession findSessionById(Long sessionId) {
