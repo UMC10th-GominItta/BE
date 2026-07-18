@@ -41,6 +41,9 @@ out/
 .env.prod
 .env.dev
 
+### local docker overrides
+docker-compose.override.yml
+
 #MacOs Log
 .DS_Store
 
