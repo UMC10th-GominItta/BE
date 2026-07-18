@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gominitta.backend.domain.session.dto.response.SessionDetailResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionListResponseDTO;
 import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.global.auth.util.SecurityUtil;
@@ -38,6 +40,20 @@ public class SessionController {
 	) {
 		Long userId = SecurityUtil.getCurrentUserId();
 		List<SessionListResponseDTO> data = sessionService.getSessions(userId, status);
-		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
+		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+
+	@Operation(
+		summary = "세션 상세 조회",
+		description = "특정 세션의 예약된 걱정 내용과 세션 진행 정보, 세션 기록 목록을 반환합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@GetMapping("/{sessionId}")
+	public ResponseEntity<ApiResponse<SessionDetailResponseDTO>> getSession(
+		@PathVariable Long sessionId
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		SessionDetailResponseDTO data = sessionService.getSessionDetail(userId, sessionId);
+		return ResponseEntity.ok(ApiResponse.success(data));
 	}
 }
