@@ -26,6 +26,7 @@ public enum SessionErrorCode implements BaseErrorCode {
 
 	// 409 Conflict
 	INVALID_STATUS_TRANSITION(HttpStatus.CONFLICT, "SESSION_40901", "변경할 수 없는 세션 상태입니다."),
+	SESSION_ALREADY_EXISTS(HttpStatus.CONFLICT, "SESSION_40902", "이미 세션이 생성된 걱정입니다."),
 
 	// 422 Unprocessable Entity
 	EMOTION_SCORE_REQUIRED(HttpStatus.UNPROCESSABLE_ENTITY, "SESSION_42201", "세션 후 감정 점수가 필요합니다."),

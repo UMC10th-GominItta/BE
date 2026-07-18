@@ -10,4 +10,6 @@ import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 public interface SessionRepository extends JpaRepository<MindSession, Long> {
 
 	List<MindSession> findByUserIdAndStatusInOrderByScheduledStartAtAsc(Long userId, List<SessionStatus> statuses);
+
+	boolean existsByWorryId(Long worryId);
 }
