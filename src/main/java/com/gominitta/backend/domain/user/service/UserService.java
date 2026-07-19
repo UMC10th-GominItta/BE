@@ -3,7 +3,6 @@ package com.gominitta.backend.domain.user.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gominitta.backend.global.auth.jwt.RefreshTokenStore;
 import com.gominitta.backend.domain.dailymessage.entity.DailyMessage;
 import com.gominitta.backend.domain.dailymessage.service.DailyMessageService;
 import com.gominitta.backend.domain.user.dto.request.UserUpdateRequestDTO;
@@ -13,6 +12,7 @@ import com.gominitta.backend.domain.user.dto.response.UserUpdateResponseDTO;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.exception.UserErrorCode;
 import com.gominitta.backend.domain.user.repository.UserRepository;
+import com.gominitta.backend.global.auth.jwt.RefreshTokenStore;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
 import lombok.RequiredArgsConstructor;
