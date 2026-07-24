@@ -80,6 +80,20 @@ public class RecordService {
 		return SessionRecordResponseDTO.from(record);
 	}
 
+	@Transactional
+	public void deleteRecord(Long userId, Long sessionId, Long recordId) {
+		MindSession session = findSessionById(sessionId);
+		SessionRecord record = findRecordById(recordId);
+		if (!record.getSessionId().equals(sessionId)) {
+			throw new GeneralException(RecordErrorCode.RECORD_NOT_FOUND);
+		}
+		if (!session.getUserId().equals(userId)) {
+			throw new GeneralException(RecordErrorCode.FORBIDDEN);
+		}
+
+		sessionRecordRepository.delete(record);
+	}
+
 	private SessionRecord findRecordById(Long recordId) {
 		return sessionRecordRepository.findById(recordId)
 			.orElseThrow(() -> new GeneralException(RecordErrorCode.RECORD_NOT_FOUND));

@@ -3,6 +3,7 @@ package com.gominitta.backend.domain.record.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,5 +78,20 @@ public class RecordController {
 		Long userId = SecurityUtil.getCurrentUserId();
 		SessionRecordResponseDTO data = recordService.updateRecord(userId, id, recordId, request);
 		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+
+	@Operation(
+		summary = "기록 삭제",
+		description = "작성한 기록을 삭제합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@DeleteMapping("/{recordId}")
+	public ResponseEntity<ApiResponse<Void>> deleteRecord(
+		@PathVariable Long id,
+		@PathVariable Long recordId
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		recordService.deleteRecord(userId, id, recordId);
+		return ResponseEntity.ok(ApiResponse.success(null));
 	}
 }
