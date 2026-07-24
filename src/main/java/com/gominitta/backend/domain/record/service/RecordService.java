@@ -76,6 +76,7 @@ public class RecordService {
 		}
 
 		record.updateContent(request.contentText());
+		sessionRecordRepository.saveAndFlush(record);
 		return SessionRecordResponseDTO.from(record);
 	}
 
