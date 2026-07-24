@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.record.dto.request.RecordUpdateRequestDTO;
 import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
 import com.gominitta.backend.domain.record.dto.response.SessionRecordResponseDTO;
 import com.gominitta.backend.domain.record.entity.SessionRecord;
@@ -56,6 +57,32 @@ public class RecordService {
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.TEXT, request.contentText(), null);
 		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
+	}
+
+	@Transactional
+	public SessionRecordResponseDTO updateRecord(
+		Long userId, Long sessionId, Long recordId, RecordUpdateRequestDTO request
+	) {
+		MindSession session = findSessionById(sessionId);
+		SessionRecord record = findRecordById(recordId);
+		if (!record.getSessionId().equals(sessionId)) {
+			throw new GeneralException(RecordErrorCode.RECORD_NOT_FOUND);
+		}
+		if (!session.getUserId().equals(userId)) {
+			throw new GeneralException(RecordErrorCode.FORBIDDEN);
+		}
+		if (request.contentText() == null || request.contentText().isBlank()) {
+			throw new GeneralException(RecordErrorCode.EMPTY_CONTENT);
+		}
+
+		record.updateContent(request.contentText());
+		sessionRecordRepository.saveAndFlush(record);
+		return SessionRecordResponseDTO.from(record);
+	}
+
+	private SessionRecord findRecordById(Long recordId) {
+		return sessionRecordRepository.findById(recordId)
+			.orElseThrow(() -> new GeneralException(RecordErrorCode.RECORD_NOT_FOUND));
 	}
 
 	private RecordType parseRecordType(String recordType) {

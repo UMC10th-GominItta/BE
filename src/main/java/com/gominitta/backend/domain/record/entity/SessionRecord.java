@@ -47,4 +47,8 @@ public class SessionRecord extends BaseEntity {
 		record.mediaUrl = mediaUrl;
 		return record;
 	}
+
+	public void updateContent(String contentText) {
+		this.contentText = contentText;
+	}
 }
