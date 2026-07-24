@@ -1,0 +1,45 @@
+package com.gominitta.backend.domain.record.controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.gominitta.backend.domain.record.dto.response.SessionRecordResponseDTO;
+import com.gominitta.backend.domain.record.service.RecordService;
+import com.gominitta.backend.global.auth.util.SecurityUtil;
+import com.gominitta.backend.global.common.response.ApiResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+
+@Tag(name = "Record", description = "세션 기록 API")
+@RestController
+@RequestMapping("/api/v1/sessions/{id}/records")
+@RequiredArgsConstructor
+public class RecordController {
+
+	private final RecordService recordService;
+
+	@Operation(
+		summary = "세션 기록 목록 조회",
+		description = "특정 세션에 작성된 기록(텍스트/음성/필기) 목록을 반환합니다. "
+			+ "recordType 파라미터로 text/voice/handwriting 중 하나만 필터링할 수 있습니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@GetMapping
+	public ResponseEntity<ApiResponse<List<SessionRecordResponseDTO>>> getSessionRecords(
+		@PathVariable Long id,
+		@RequestParam(required = false) String recordType
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		List<SessionRecordResponseDTO> data = recordService.getSessionRecords(userId, id, recordType);
+		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+}

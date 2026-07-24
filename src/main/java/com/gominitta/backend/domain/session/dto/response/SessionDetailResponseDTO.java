@@ -3,9 +3,9 @@ package com.gominitta.backend.domain.session.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.gominitta.backend.domain.record.entity.SessionRecord;
+import com.gominitta.backend.domain.record.entity.enums.RecordType;
 import com.gominitta.backend.domain.session.entity.MindSession;
-import com.gominitta.backend.domain.session.entity.SessionRecord;
-import com.gominitta.backend.domain.session.entity.enums.RecordType;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 

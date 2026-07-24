@@ -6,16 +6,16 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.record.entity.SessionRecord;
+import com.gominitta.backend.domain.record.repository.SessionRecordRepository;
 import com.gominitta.backend.domain.session.dto.request.SessionStatusChangeRequestDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionDetailResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionListResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionStatusChangeResponseDTO;
 import com.gominitta.backend.domain.session.entity.MindSession;
-import com.gominitta.backend.domain.session.entity.SessionRecord;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
-import com.gominitta.backend.domain.session.repository.SessionRecordRepository;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
