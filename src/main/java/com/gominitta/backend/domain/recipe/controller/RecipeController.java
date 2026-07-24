@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gominitta.backend.domain.recipe.dto.request.RecipeCreateRequestDTO;
 import com.gominitta.backend.domain.recipe.dto.request.RecipeUpdateRequestDTO;
 import com.gominitta.backend.domain.recipe.dto.response.RecipeResponseDTO;
+import com.gominitta.backend.domain.recipe.service.RecipeService;
 import com.gominitta.backend.global.auth.util.SecurityUtil;
 import com.gominitta.backend.global.common.response.ApiResponse;
 
@@ -24,11 +25,27 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Recipe", description = "레시피 API")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
+
+	private final RecipeService recipeService;
+
+	@Operation(
+		summary = "랜덤 시스템 레시피 조회",
+		description = "시스템 레시피 중 3개를 랜덤으로 반환합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@GetMapping("/random")
+	public ResponseEntity<ApiResponse<List<RecipeResponseDTO>>> getRandomRecipes() {
+		SecurityUtil.getCurrentUserId();
+		List<RecipeResponseDTO> data = recipeService.getRandomSystemRecipes();
+		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
+	}
 
 	@Operation(
 		summary = "레시피 목록 조회",
@@ -39,15 +56,8 @@ public class RecipeController {
 	public ResponseEntity<ApiResponse<List<RecipeResponseDTO>>> getRecipes(
 		@RequestParam(defaultValue = "mine") String scope
 	) {
-		SecurityUtil.getCurrentUserId();
-		List<RecipeResponseDTO> data = List.of(
-			RecipeResponseDTO.builder()
-				.recipeId(1L)
-				.title("5분 호흡 명상")
-				.description("5분간 천천히 호흡하며 마음을 가라앉히는 레시피입니다.")
-				.estimatedMinutes(5)
-				.build()
-		);
+		Long userId = SecurityUtil.getCurrentUserId();
+		List<RecipeResponseDTO> data = recipeService.getRecipes(userId, scope);
 		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
 	}
 
@@ -61,12 +71,7 @@ public class RecipeController {
 		@PathVariable Long recipeId
 	) {
 		SecurityUtil.getCurrentUserId();
-		RecipeResponseDTO data = RecipeResponseDTO.builder()
-			.recipeId(recipeId)
-			.title("5분 호흡 명상")
-			.description("5분간 천천히 호흡하며 마음을 가라앉히는 레시피입니다.")
-			.estimatedMinutes(5)
-			.build();
+		RecipeResponseDTO data = recipeService.getRecipe(recipeId);
 		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
 	}
 
@@ -79,13 +84,8 @@ public class RecipeController {
 	public ResponseEntity<ApiResponse<RecipeResponseDTO>> createRecipe(
 		@Valid @RequestBody RecipeCreateRequestDTO request
 	) {
-		SecurityUtil.getCurrentUserId();
-		RecipeResponseDTO data = RecipeResponseDTO.builder()
-			.recipeId(1L)
-			.title(request.title())
-			.description(request.description())
-			.estimatedMinutes(request.estimatedMinutes())
-			.build();
+		Long userId = SecurityUtil.getCurrentUserId();
+		RecipeResponseDTO data = recipeService.createRecipe(userId, request);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(ApiResponse.success("201", "레시피가 등록되었습니다.", data));
 	}
@@ -100,13 +100,8 @@ public class RecipeController {
 		@PathVariable Long recipeId,
 		@Valid @RequestBody RecipeUpdateRequestDTO request
 	) {
-		SecurityUtil.getCurrentUserId();
-		RecipeResponseDTO data = RecipeResponseDTO.builder()
-			.recipeId(recipeId)
-			.title(request.title())
-			.description(request.description())
-			.estimatedMinutes(request.estimatedMinutes())
-			.build();
+		Long userId = SecurityUtil.getCurrentUserId();
+		RecipeResponseDTO data = recipeService.updateRecipe(userId, recipeId, request);
 		return ResponseEntity.ok(ApiResponse.success("레시피가 수정되었습니다.", data));
 	}
 
@@ -119,7 +114,8 @@ public class RecipeController {
 	public ResponseEntity<ApiResponse<Void>> deleteRecipe(
 		@PathVariable Long recipeId
 	) {
-		SecurityUtil.getCurrentUserId();
+		Long userId = SecurityUtil.getCurrentUserId();
+		recipeService.deleteRecipe(userId, recipeId);
 		return ResponseEntity.ok(ApiResponse.success("레시피가 삭제되었습니다.", null));
 	}
 }
