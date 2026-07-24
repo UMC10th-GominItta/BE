@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
 import com.gominitta.backend.domain.record.dto.response.SessionRecordResponseDTO;
 import com.gominitta.backend.domain.record.service.RecordService;
 import com.gominitta.backend.global.auth.util.SecurityUtil;
@@ -40,6 +43,21 @@ public class RecordController {
 	) {
 		Long userId = SecurityUtil.getCurrentUserId();
 		List<SessionRecordResponseDTO> data = recordService.getSessionRecords(userId, id, recordType);
+		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+
+	@Operation(
+		summary = "텍스트 기록 생성",
+		description = "세션 진행 중 떠오른 생각을 텍스트로 기록합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@PostMapping
+	public ResponseEntity<ApiResponse<SessionRecordResponseDTO>> createTextRecord(
+		@PathVariable Long id,
+		@RequestBody TextRecordCreateRequestDTO request
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		SessionRecordResponseDTO data = recordService.createTextRecord(userId, id, request);
 		return ResponseEntity.ok(ApiResponse.success(data));
 	}
 }
