@@ -1,6 +1,6 @@
-package com.gominitta.backend.domain.session.entity;
+package com.gominitta.backend.domain.record.entity;
 
-import com.gominitta.backend.domain.session.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.enums.RecordType;
 import com.gominitta.backend.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;

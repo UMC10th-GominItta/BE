@@ -1,11 +1,11 @@
-package com.gominitta.backend.domain.session.repository;
+package com.gominitta.backend.domain.record.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.gominitta.backend.domain.session.entity.SessionRecord;
-import com.gominitta.backend.domain.session.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.SessionRecord;
+import com.gominitta.backend.domain.record.entity.enums.RecordType;
 
 public interface SessionRecordRepository extends JpaRepository<SessionRecord, Long> {
 

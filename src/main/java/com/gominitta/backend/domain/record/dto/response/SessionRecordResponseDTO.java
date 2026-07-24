@@ -1,9 +1,9 @@
-package com.gominitta.backend.domain.session.dto.response;
+package com.gominitta.backend.domain.record.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.gominitta.backend.domain.session.entity.SessionRecord;
-import com.gominitta.backend.domain.session.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.SessionRecord;
+import com.gominitta.backend.domain.record.entity.enums.RecordType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

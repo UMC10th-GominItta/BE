@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gominitta.backend.domain.session.dto.request.SessionStatusChangeRequestDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionDetailResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionListResponseDTO;
-import com.gominitta.backend.domain.session.dto.response.SessionRecordResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionStatusChangeResponseDTO;
 import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.global.auth.util.SecurityUtil;
@@ -76,22 +75,6 @@ public class SessionController {
 	) {
 		Long userId = SecurityUtil.getCurrentUserId();
 		SessionStatusChangeResponseDTO data = sessionService.changeStatus(userId, id, request);
-		return ResponseEntity.ok(ApiResponse.success(data));
-	}
-
-	@Operation(
-		summary = "세션 기록 목록 조회",
-		description = "특정 세션에 작성된 기록(텍스트/음성/필기) 목록을 반환합니다. "
-			+ "recordType 파라미터로 text/voice/handwriting 중 하나만 필터링할 수 있습니다.",
-		security = @SecurityRequirement(name = "bearerAuth")
-	)
-	@GetMapping("/{id}/records")
-	public ResponseEntity<ApiResponse<List<SessionRecordResponseDTO>>> getSessionRecords(
-		@PathVariable Long id,
-		@RequestParam(required = false) String recordType
-	) {
-		Long userId = SecurityUtil.getCurrentUserId();
-		List<SessionRecordResponseDTO> data = sessionService.getSessionRecords(userId, id, recordType);
 		return ResponseEntity.ok(ApiResponse.success(data));
 	}
 }
