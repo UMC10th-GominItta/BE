@@ -1,4 +1,18 @@
 package com.gominitta.backend.domain.notification.repository;
 
-public interface NotificationRepository {
+import com.gominitta.backend.domain.notification.entity.Notification;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+
+	// 본인 알림만 최신순으로 페이지 조회
+	Page<Notification> findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+	// 삭제되지 않은 알림 단건 조회
+	Optional<Notification> findByIdAndIsDeletedFalse(Long notificationId);
 }
