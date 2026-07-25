@@ -1,12 +1,12 @@
 package com.gominitta.backend.domain.notification.repository;
 
-import com.gominitta.backend.domain.notification.entity.Notification;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.gominitta.backend.domain.notification.entity.Notification;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 

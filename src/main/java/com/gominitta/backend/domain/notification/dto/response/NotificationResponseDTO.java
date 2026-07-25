@@ -15,15 +15,15 @@ public record NotificationResponseDTO(
 	LocalDateTime readAt,
 	LocalDateTime createdAt
 ) {
-	public static NotificationResponseDTO from(Notification n) {
+	public static NotificationResponseDTO from(Notification notification) {
 		return new NotificationResponseDTO(
-			n.getId(),
-			n.getType(),
-			n.getTitle(),
-			n.getBody(),
-			n.isRead(),
-			n.getReadAt(),
-			n.getCreatedAt()
+			notification.getId(),
+			notification.getType(),
+			notification.getTitle(),
+			notification.getBody(),
+			notification.isRead(),
+			notification.getReadAt(),
+			notification.getCreatedAt()
 		);
 	}
 }
