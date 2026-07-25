@@ -1,4 +1,4 @@
-package com.gominitta.backend.domain.record.entity.enums;
+package com.gominitta.backend.domain.session.entity.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
