@@ -14,6 +14,7 @@ import com.gominitta.backend.domain.session.dto.response.SessionListResponseDTO;
 import com.gominitta.backend.domain.session.dto.response.SessionStatusChangeResponseDTO;
 import com.gominitta.backend.domain.session.entity.MindSession;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
+import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.global.common.exception.GeneralException;
@@ -84,12 +85,13 @@ public class SessionService {
 	 */
 	@Transactional
 	public Long createSessionForWorry(Long worryId, Long userId, LocalDateTime scheduledStartAt,
-			LocalDateTime scheduledEndAt, String worryContent, Integer emotionScoreBefore) {
+			LocalDateTime scheduledEndAt, String worryContent, ThemeCategory themeCategory,
+			Integer emotionScoreBefore) {
 		if (sessionRepository.existsByWorryId(worryId)) {
 			throw new GeneralException(SessionErrorCode.SESSION_ALREADY_EXISTS);
 		}
 
-		MindSession session = MindSession.create(userId, worryId, worryContent,
+		MindSession session = MindSession.create(userId, worryId, worryContent, themeCategory,
 			emotionScoreBefore, scheduledStartAt, scheduledEndAt);
 		return sessionRepository.save(session).getMindSessionId();
 	}

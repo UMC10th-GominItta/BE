@@ -26,7 +26,3 @@ jwt:
 
 kakao:
   app-id: ${KAKAO_APP_ID}
-
-openai:
-  api-key: ${OPENAI_API_KEY:}
-  model: gpt-4o-mini
