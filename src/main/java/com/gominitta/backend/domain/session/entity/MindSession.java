@@ -3,7 +3,6 @@ package com.gominitta.backend.domain.session.entity;
 import java.time.LocalDateTime;
 
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
-import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -42,10 +41,6 @@ public class MindSession extends BaseEntity {
 	@Column(name = "worry_content", nullable = false, columnDefinition = "TEXT")
 	private String worryContent;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "theme_category", length = 10)
-	private ThemeCategory themeCategory;
-
 	@Column(name = "emotion_score_before")
 	private Integer emotionScoreBefore;
 
@@ -64,14 +59,13 @@ public class MindSession extends BaseEntity {
 	@Column(name = "emotion_score_after")
 	private Integer emotionScoreAfter;
 
-	public static MindSession create(Long userId, Long worryId, String worryContent, ThemeCategory themeCategory,
+	public static MindSession create(Long userId, Long worryId, String worryContent,
 			Integer emotionScoreBefore, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
 		MindSession session = new MindSession();
 		session.userId = userId;
 		session.worryId = worryId;
 		session.status = SessionStatus.SCHEDULED;
 		session.worryContent = worryContent;
-		session.themeCategory = themeCategory;
 		session.emotionScoreBefore = emotionScoreBefore;
 		session.scheduledStartAt = scheduledStartAt;
 		session.scheduledEndAt = scheduledEndAt;

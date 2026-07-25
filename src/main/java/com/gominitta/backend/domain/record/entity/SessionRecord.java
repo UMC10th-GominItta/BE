@@ -1,6 +1,7 @@
 package com.gominitta.backend.domain.record.entity;
 
 import com.gominitta.backend.domain.record.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.enums.ThemeCategory;
 import com.gominitta.backend.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -39,12 +40,18 @@ public class SessionRecord extends BaseEntity {
 	@Column(name = "media_url", length = 500)
 	private String mediaUrl;
 
-	public static SessionRecord create(Long sessionId, RecordType recordType, String contentText, String mediaUrl) {
+	@Enumerated(EnumType.STRING)
+	@Column(name = "theme_category", length = 10)
+	private ThemeCategory themeCategory;
+
+	public static SessionRecord create(Long sessionId, RecordType recordType, String contentText, String mediaUrl,
+			ThemeCategory themeCategory) {
 		SessionRecord record = new SessionRecord();
 		record.sessionId = sessionId;
 		record.recordType = recordType;
 		record.contentText = contentText;
 		record.mediaUrl = mediaUrl;
+		record.themeCategory = themeCategory;
 		return record;
 	}
 
