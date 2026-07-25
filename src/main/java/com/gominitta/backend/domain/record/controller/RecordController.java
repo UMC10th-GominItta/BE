@@ -2,6 +2,7 @@ package com.gominitta.backend.domain.record.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gominitta.backend.domain.record.dto.request.RecordUpdateRequestDTO;
 import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
@@ -61,6 +63,21 @@ public class RecordController {
 	) {
 		Long userId = SecurityUtil.getCurrentUserId();
 		SessionRecordResponseDTO data = recordService.createTextRecord(userId, id, request);
+		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+
+	@Operation(
+		summary = "음성 기록 생성",
+		description = "녹음된 음성 파일을 업로드하면 STT로 변환하여 기록으로 저장합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@PostMapping(path = "/voice", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<ApiResponse<SessionRecordResponseDTO>> createVoiceRecord(
+		@PathVariable Long id,
+		@RequestParam(value = "file", required = false) MultipartFile file
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		SessionRecordResponseDTO data = recordService.createVoiceRecord(userId, id, file);
 		return ResponseEntity.ok(ApiResponse.success(data));
 	}
 
