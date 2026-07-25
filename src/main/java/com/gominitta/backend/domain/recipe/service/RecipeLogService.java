@@ -33,7 +33,6 @@ public class RecipeLogService {
 		RecipeLog log = RecipeLog.create(
 			userId,
 			request.recipeId(),
-			null,
 			LocalDateTime.now()
 		);
 		recipeLogRepository.save(log);
