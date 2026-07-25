@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.gominitta.backend.domain.record.entity.SessionRecord;
 import com.gominitta.backend.domain.record.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.enums.ThemeCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -15,6 +16,7 @@ public record SessionRecordResponseDTO(
 	@Schema(description = "세션 ID", example = "1") Long sessionId,
 	@Schema(description = "기록 유형", example = "text") RecordType recordType,
 	@Schema(description = "텍스트 내용", example = "지금 드는 생각을 그대로 적었어요.") String contentText,
+	@Schema(description = "걱정 주제 (분류 실패 시 null)", example = "진로") ThemeCategory themeCategory,
 	@Schema(description = "미디어 URL", example = "https://cdn.gominitta.com/records/voice/6.m4a") String mediaUrl,
 	@Schema(description = "기록 생성 시각", example = "2026-05-27T22:10:00") LocalDateTime createdAt,
 	@Schema(description = "기록 수정 시각", example = "2026-05-27T22:40:00") LocalDateTime updatedAt
@@ -25,6 +27,7 @@ public record SessionRecordResponseDTO(
 			.sessionId(record.getSessionId())
 			.recordType(record.getRecordType())
 			.contentText(record.getContentText())
+			.themeCategory(record.getThemeCategory())
 			.mediaUrl(record.getMediaUrl())
 			.createdAt(record.getCreatedAt())
 			.updatedAt(record.getUpdatedAt())

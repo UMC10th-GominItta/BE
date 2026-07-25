@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.record.client.ThemeClassifier;
 import com.gominitta.backend.domain.record.dto.request.RecordUpdateRequestDTO;
 import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
 import com.gominitta.backend.domain.record.dto.response.SessionRecordResponseDTO;
 import com.gominitta.backend.domain.record.entity.SessionRecord;
 import com.gominitta.backend.domain.record.entity.enums.RecordType;
+import com.gominitta.backend.domain.record.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.domain.record.repository.SessionRecordRepository;
 import com.gominitta.backend.domain.session.entity.MindSession;
@@ -26,6 +28,7 @@ public class RecordService {
 
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
+	private final ThemeClassifier themeClassifier;
 
 	@Transactional(readOnly = true)
 	public List<SessionRecordResponseDTO> getSessionRecords(Long userId, Long sessionId, String recordType) {
@@ -55,7 +58,9 @@ public class RecordService {
 			throw new GeneralException(SessionErrorCode.RECORDING_NOT_ALLOWED);
 		}
 
-		SessionRecord record = SessionRecord.create(sessionId, RecordType.TEXT, request.contentText(), null);
+		ThemeCategory themeCategory = themeClassifier.classify(request.contentText()).orElse(null);
+		SessionRecord record = SessionRecord.create(sessionId, RecordType.TEXT, request.contentText(), null,
+			themeCategory);
 		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
 	}
 

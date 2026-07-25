@@ -1,16 +1,15 @@
-package com.gominitta.backend.domain.session.entity.enums;
+package com.gominitta.backend.domain.record.entity.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ThemeCategory {
 	CAREER("진로"),
-	RELATIONSHIP("관계"),
 	STUDY("학업"),
-	HEALTH("건강"),
 	FAMILY("가족"),
-	JOB("취업"),
+	HEALTH("건강"),
 	MONEY("돈"),
-	PRESENTATION("발표");
+	JOB("취업"),
+	RELATIONSHIP("인간관계");
 
 	private final String label;
 
