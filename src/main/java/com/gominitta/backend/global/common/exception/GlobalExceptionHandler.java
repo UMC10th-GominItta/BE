@@ -10,7 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.global.common.response.ApiResponse;
 
 import jakarta.validation.ConstraintViolation;
@@ -92,6 +94,17 @@ public class GlobalExceptionHandler {
 				"COMMON_400_CONSTRAINT",
 				message.isBlank() ? "요청 값이 올바르지 않습니다." : message
 			));
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+		BaseErrorCode ec = RecordErrorCode.FILE_TOO_LARGE;
+
+		log.warn("[MaxUploadSizeExceeded] {}", ex.getMessage());
+
+		return ResponseEntity
+			.status(ec.getStatus())
+			.body(ApiResponse.fail(ec.getCode(), ec.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
