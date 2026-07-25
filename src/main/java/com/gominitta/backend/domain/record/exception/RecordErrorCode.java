@@ -13,6 +13,7 @@ public enum RecordErrorCode implements BaseErrorCode {
 
 	// 400 Bad Request
 	EMPTY_CONTENT(HttpStatus.BAD_REQUEST, "RECORD_40001", "기록 내용이 비어 있습니다."),
+	CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "RECORD_40002", "기록 내용은 3000자를 초과할 수 없습니다."),
 
 	// 403 Forbidden
 	FORBIDDEN(HttpStatus.FORBIDDEN, "RECORD_40301", "접근 권한이 없습니다."),

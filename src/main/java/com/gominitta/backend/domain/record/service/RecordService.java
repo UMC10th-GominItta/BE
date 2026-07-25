@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecordService {
 
+	private static final int MAX_CONTENT_LENGTH = 3000;
+
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
 
@@ -51,6 +53,9 @@ public class RecordService {
 		if (request.contentText() == null || request.contentText().isBlank()) {
 			throw new GeneralException(RecordErrorCode.EMPTY_CONTENT);
 		}
+		if (request.contentText().length() > MAX_CONTENT_LENGTH) {
+			throw new GeneralException(RecordErrorCode.CONTENT_TOO_LONG);
+		}
 		if (session.getStatus() == SessionStatus.COMPLETED) {
 			throw new GeneralException(SessionErrorCode.RECORDING_NOT_ALLOWED);
 		}
@@ -73,6 +78,9 @@ public class RecordService {
 		}
 		if (request.contentText() == null || request.contentText().isBlank()) {
 			throw new GeneralException(RecordErrorCode.EMPTY_CONTENT);
+		}
+		if (request.contentText().length() > MAX_CONTENT_LENGTH) {
+			throw new GeneralException(RecordErrorCode.CONTENT_TOO_LONG);
 		}
 
 		record.updateContent(request.contentText());
