@@ -13,7 +13,7 @@ import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
 @Component
-public class LocalVoiceFileStorage {
+public class LocalFileStorage {
 
 	@Value("${file.upload-dir}")
 	private String uploadDir;
@@ -21,9 +21,9 @@ public class LocalVoiceFileStorage {
 	@Value("${file.base-url}")
 	private String baseUrl;
 
-	public String store(MultipartFile file) {
+	public String store(MultipartFile file, String subDir) {
 		try {
-			Path dir = Path.of(uploadDir);
+			Path dir = Path.of(uploadDir, subDir);
 			Files.createDirectories(dir);
 
 			String extension = extractExtension(file.getOriginalFilename());
@@ -31,7 +31,7 @@ public class LocalVoiceFileStorage {
 
 			file.transferTo(dir.resolve(filename));
 
-			return baseUrl + "/" + filename;
+			return baseUrl + "/" + subDir + "/" + filename;
 		} catch (IOException e) {
 			throw new GeneralException(RecordErrorCode.INTERNAL_ERROR);
 		}

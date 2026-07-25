@@ -82,6 +82,21 @@ public class RecordController {
 	}
 
 	@Operation(
+		summary = "필기 기록 생성",
+		description = "손으로 쓴 필기 이미지를 업로드하면 OCR로 변환하여 기록으로 저장합니다.",
+		security = @SecurityRequirement(name = "bearerAuth")
+	)
+	@PostMapping(path = "/handwriting", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<ApiResponse<SessionRecordResponseDTO>> createHandwritingRecord(
+		@PathVariable Long id,
+		@RequestParam(value = "file", required = false) MultipartFile file
+	) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		SessionRecordResponseDTO data = recordService.createHandwritingRecord(userId, id, file);
+		return ResponseEntity.ok(ApiResponse.success(data));
+	}
+
+	@Operation(
 		summary = "기록 수정",
 		description = "이미 작성한 기록의 텍스트 내용을 수정합니다.",
 		security = @SecurityRequirement(name = "bearerAuth")
