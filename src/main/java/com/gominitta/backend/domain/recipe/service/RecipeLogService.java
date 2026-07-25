@@ -10,6 +10,7 @@ import com.gominitta.backend.domain.recipe.dto.request.RecipeLogCreateRequestDTO
 import com.gominitta.backend.domain.recipe.dto.response.RecipeLogCompleteResponseDTO;
 import com.gominitta.backend.domain.recipe.dto.response.RecipeLogResponseDTO;
 import com.gominitta.backend.domain.recipe.dto.response.RecipeLogSummaryResponseDTO;
+import com.gominitta.backend.domain.recipe.entity.Recipe;
 import com.gominitta.backend.domain.recipe.entity.RecipeLog;
 import com.gominitta.backend.domain.recipe.exception.RecipeErrorCode;
 import com.gominitta.backend.domain.recipe.repository.RecipeLogRepository;
@@ -27,8 +28,12 @@ public class RecipeLogService {
 
 	@Transactional
 	public RecipeLogResponseDTO createRecipeLog(Long userId, RecipeLogCreateRequestDTO request) {
-		recipeRepository.findByIdAndIsDeletedFalse(request.recipeId())
+		Recipe recipe = recipeRepository.findByIdAndIsDeletedFalse(request.recipeId())
 			.orElseThrow(() -> new GeneralException(RecipeErrorCode.RECIPE_NOT_FOUND));
+
+		if (recipe.getUserId() != null && !recipe.getUserId().equals(userId)) {
+			throw new GeneralException(RecipeErrorCode.RECIPE_LOG_CREATE_FORBIDDEN);
+		}
 
 		RecipeLog log = RecipeLog.create(
 			userId,
