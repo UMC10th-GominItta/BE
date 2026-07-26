@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		String location = Path.of(uploadDir).toAbsolutePath().toString().replace("\\", "/");
-		registry.addResourceHandler("/media/records/voice/**")
+		registry.addResourceHandler("/media/records/**")
 			.addResourceLocations("file:" + location + "/");
 	}
 }

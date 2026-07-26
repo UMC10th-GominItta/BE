@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +14,8 @@ import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
 @Component
-public class LocalVoiceFileStorage {
+@Profile("dev")
+public class LocalFileStorage implements FileStorage {
 
 	@Value("${file.upload-dir}")
 	private String uploadDir;
@@ -21,9 +23,10 @@ public class LocalVoiceFileStorage {
 	@Value("${file.base-url}")
 	private String baseUrl;
 
-	public String store(MultipartFile file) {
+	@Override
+	public String store(MultipartFile file, String subDir) {
 		try {
-			Path dir = Path.of(uploadDir);
+			Path dir = Path.of(uploadDir, subDir);
 			Files.createDirectories(dir);
 
 			String extension = extractExtension(file.getOriginalFilename());
@@ -31,7 +34,7 @@ public class LocalVoiceFileStorage {
 
 			file.transferTo(dir.resolve(filename));
 
-			return baseUrl + "/" + filename;
+			return baseUrl + "/" + subDir + "/" + filename;
 		} catch (IOException e) {
 			throw new GeneralException(RecordErrorCode.INTERNAL_ERROR);
 		}
