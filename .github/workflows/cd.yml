@@ -61,9 +61,9 @@ jobs:
             --timeout-seconds 600 \
             --parameters 'commands=[
               "cd /gomin",
-              "docker compose pull app",
-              "if docker compose up -d; then echo compose up succeeded; else docker compose down && docker compose up -d; fi",
-              "docker compose ps",
+              "docker compose --env-file .env.prod pull app",
+              "if docker compose --env-file .env.prod up -d; then echo compose up succeeded; else docker compose --env-file .env.prod down && docker compose --env-file .env.prod up -d; fi",
+              "docker compose --env-file .env.prod ps",
               "docker image prune -f"
             ]' \
             --query "Command.CommandId" \
