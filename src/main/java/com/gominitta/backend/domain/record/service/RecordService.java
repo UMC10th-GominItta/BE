@@ -20,7 +20,7 @@ import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.global.common.exception.GeneralException;
-import com.gominitta.backend.global.storage.LocalVoiceFileStorage;
+import com.gominitta.backend.global.storage.FileStorage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +35,7 @@ public class RecordService {
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
 	private final OpenAiSttClient openAiSttClient;
-	private final LocalVoiceFileStorage localVoiceFileStorage;
+	private final FileStorage fileStorage;
 
 	@Transactional(readOnly = true)
 	public List<SessionRecordResponseDTO> getSessionRecords(Long userId, Long sessionId, String recordType) {
@@ -87,7 +87,7 @@ public class RecordService {
 		}
 
 		String contentText = openAiSttClient.transcribe(file);
-		String mediaUrl = localVoiceFileStorage.store(file);
+		String mediaUrl = fileStorage.store(file, "voice");
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.VOICE, contentText, mediaUrl);
 		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
