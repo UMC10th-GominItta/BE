@@ -36,6 +36,8 @@ openai:
   api-key: ${OPENAI_API_KEY}
   stt:
     model: ${OPENAI_STT_MODEL:gpt-4o-mini-transcribe}
+  ocr:
+    model: ${OPENAI_OCR_MODEL:gpt-5.4-nano}
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads/records}

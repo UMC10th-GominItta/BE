@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gominitta.backend.domain.record.client.OpenAiOcrClient;
 import com.gominitta.backend.domain.record.client.OpenAiSttClient;
 import com.gominitta.backend.domain.record.dto.request.RecordUpdateRequestDTO;
 import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
@@ -31,10 +32,12 @@ public class RecordService {
 	private static final int MAX_CONTENT_LENGTH = 3000;
 	private static final Set<String> ALLOWED_VOICE_EXTENSIONS =
 		Set.of("mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm");
+	private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of("png", "jpg", "jpeg");
 
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
 	private final OpenAiSttClient openAiSttClient;
+	private final OpenAiOcrClient openAiOcrClient;
 	private final FileStorage fileStorage;
 
 	@Transactional(readOnly = true)
@@ -94,6 +97,27 @@ public class RecordService {
 	}
 
 	@Transactional
+	public SessionRecordResponseDTO createHandwritingRecord(Long userId, Long sessionId, MultipartFile file) {
+		MindSession session = findSessionById(sessionId);
+		if (!session.getUserId().equals(userId)) {
+			throw new GeneralException(SessionErrorCode.FORBIDDEN);
+		}
+		if (file == null || file.isEmpty()) {
+			throw new GeneralException(RecordErrorCode.EMPTY_IMAGE_FILE);
+		}
+		validateImageFileExtension(file.getOriginalFilename());
+		if (session.getStatus() == SessionStatus.COMPLETED) {
+			throw new GeneralException(SessionErrorCode.RECORDING_NOT_ALLOWED);
+		}
+
+		String contentText = openAiOcrClient.extractText(file);
+		String mediaUrl = fileStorage.store(file, "handwriting");
+
+		SessionRecord record = SessionRecord.create(sessionId, RecordType.HANDWRITING, contentText, mediaUrl);
+		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
+	}
+
+	@Transactional
 	public SessionRecordResponseDTO updateRecord(
 		Long userId, Long sessionId, Long recordId, RecordUpdateRequestDTO request
 	) {
@@ -142,6 +166,16 @@ public class RecordService {
 		}
 		String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
 		if (!ALLOWED_VOICE_EXTENSIONS.contains(extension)) {
+			throw new GeneralException(RecordErrorCode.UNSUPPORTED_FILE_TYPE);
+		}
+	}
+
+	private void validateImageFileExtension(String filename) {
+		if (filename == null || filename.lastIndexOf('.') == -1) {
+			throw new GeneralException(RecordErrorCode.UNSUPPORTED_FILE_TYPE);
+		}
+		String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+		if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension)) {
 			throw new GeneralException(RecordErrorCode.UNSUPPORTED_FILE_TYPE);
 		}
 	}
