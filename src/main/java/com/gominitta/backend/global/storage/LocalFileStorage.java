@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +14,8 @@ import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
 @Component
-public class LocalFileStorage {
+@Profile("dev")
+public class LocalFileStorage implements FileStorage {
 
 	@Value("${file.upload-dir}")
 	private String uploadDir;
@@ -21,6 +23,7 @@ public class LocalFileStorage {
 	@Value("${file.base-url}")
 	private String baseUrl;
 
+	@Override
 	public String store(MultipartFile file, String subDir) {
 		try {
 			Path dir = Path.of(uploadDir, subDir);

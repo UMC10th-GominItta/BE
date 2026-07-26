@@ -21,7 +21,7 @@ import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.global.common.exception.GeneralException;
-import com.gominitta.backend.global.storage.LocalFileStorage;
+import com.gominitta.backend.global.storage.FileStorage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +38,7 @@ public class RecordService {
 	private final SessionRecordRepository sessionRecordRepository;
 	private final OpenAiSttClient openAiSttClient;
 	private final OpenAiOcrClient openAiOcrClient;
-	private final LocalFileStorage localFileStorage;
+	private final FileStorage fileStorage;
 
 	@Transactional(readOnly = true)
 	public List<SessionRecordResponseDTO> getSessionRecords(Long userId, Long sessionId, String recordType) {
@@ -90,7 +90,7 @@ public class RecordService {
 		}
 
 		String contentText = openAiSttClient.transcribe(file);
-		String mediaUrl = localFileStorage.store(file, "voice");
+		String mediaUrl = fileStorage.store(file, "voice");
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.VOICE, contentText, mediaUrl);
 		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
@@ -111,7 +111,7 @@ public class RecordService {
 		}
 
 		String contentText = openAiOcrClient.extractText(file);
-		String mediaUrl = localFileStorage.store(file, "handwriting");
+		String mediaUrl = fileStorage.store(file, "handwriting");
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.HANDWRITING, contentText, mediaUrl);
 		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
