@@ -56,4 +56,8 @@ public class Recipe extends BaseEntity {
 	public void updateEstimatedMinutes(Integer estimatedMinutes) {
 		this.estimatedMinutes = estimatedMinutes;
 	}
+
+	public void delete() {
+		softDelete();
+	}
 }
