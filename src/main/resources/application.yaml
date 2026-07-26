@@ -1,3 +1,6 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
 
   config:
@@ -15,3 +18,25 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+
+kakao:
+  app-id: ${KAKAO_APP_ID}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  stt:
+    model: ${OPENAI_STT_MODEL:gpt-4o-mini-transcribe}
+
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:uploads/records/voice}
+  base-url: ${FILE_BASE_URL:http://localhost:8080/media/records/voice}

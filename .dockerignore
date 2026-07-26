@@ -1,0 +1,12 @@
+.git
+.github
+.gradle
+build
+gradle/wrapper/gradle-wrapper.jar
+
+*.md
+.gitignore
+.env
+.env.*
+
+src/test

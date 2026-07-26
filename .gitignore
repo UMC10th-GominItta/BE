@@ -41,6 +41,12 @@ out/
 .env.prod
 .env.dev
 
+### local docker overrides
+docker-compose.override.yml
+
+### local voice record file storage
+/uploads/
+
 #MacOs Log
 .DS_Store
 
