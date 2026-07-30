@@ -64,8 +64,9 @@ public class UserService {
 		User user = findActiveUser(userId);
 		DailyMessage dailyMessage = dailyMessageService.getTodaysMessage();
 
+		List<SessionStatus> activeStatuses = List.of(SessionStatus.SCHEDULED, SessionStatus.INCOMPLETE);
 		Optional<MindSession> nearestSession = sessionRepository
-			.findByUserIdAndStatusInOrderByScheduledStartAtAsc(userId, List.of(SessionStatus.SCHEDULED, SessionStatus.INCOMPLETE))
+			.findByUserIdAndStatusInOrderByScheduledStartAtAsc(userId, activeStatuses)
 			.stream()
 			.findFirst();
 
