@@ -16,7 +16,7 @@ import lombok.Builder;
 public record HomeResponseDTO(
 	@Schema(description = "유저 정보") UserInfo user,
 	@Schema(description = "오늘의 한마디") DailyMessageInfo dailyMessage,
-	@Schema(description = "가장 가까운 마음세션 (미구현 시 null)") MindSessionInfo mindSession
+	@Schema(description = "가장 가까운 예정된 마음세션 (없으면 null)") MindSessionInfo mindSession
 ) {
 	public static HomeResponseDTO of(User user, DailyMessage dailyMessage, Optional<MindSession> mindSession) {
 		return HomeResponseDTO.builder()
