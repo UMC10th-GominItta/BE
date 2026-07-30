@@ -59,7 +59,7 @@ public class UserService {
 		user.deactivate();
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public HomeResponseDTO getHome(Long userId) {
 		User user = findActiveUser(userId);
 		DailyMessage dailyMessage = dailyMessageService.getTodaysMessage();
