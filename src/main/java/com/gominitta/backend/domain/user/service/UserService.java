@@ -1,10 +1,16 @@
 package com.gominitta.backend.domain.user.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gominitta.backend.domain.dailymessage.entity.DailyMessage;
 import com.gominitta.backend.domain.dailymessage.service.DailyMessageService;
+import com.gominitta.backend.domain.session.entity.MindSession;
+import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
+import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.gominitta.backend.domain.user.dto.response.HomeResponseDTO;
 import com.gominitta.backend.domain.user.dto.response.UserProfileResponseDTO;
@@ -23,6 +29,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final DailyMessageService dailyMessageService;
+	private final SessionRepository sessionRepository;
 	private final RefreshTokenStore refreshTokenRepository;
 
 	@Transactional(readOnly = true)
@@ -52,18 +59,17 @@ public class UserService {
 		user.deactivate();
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public HomeResponseDTO getHome(Long userId) {
 		User user = findActiveUser(userId);
 		DailyMessage dailyMessage = dailyMessageService.getTodaysMessage();
 
-		// TODO: mind_sessions 도메인 구현 후 아래 작업 필요
-		//  1. MindSessionRepository에 현재 시간 기준 가장 가까운 세션 조회 쿼리 추가
-		//     ex) findTopByUserIdAndScheduledStartAtAfterOrderByScheduledStartAtAsc(userId, now)
-		//  2. 조회 결과를 HomeResponseDTO.of()에 파라미터로 전달
-		//  3. HomeResponseDTO.of() 시그니처에 MindSessionInfo 파라미터 추가
+		Optional<MindSession> nearestSession = sessionRepository
+			.findByUserIdAndStatusInOrderByScheduledStartAtAsc(userId, List.of(SessionStatus.SCHEDULED, SessionStatus.INCOMPLETE))
+			.stream()
+			.findFirst();
 
-		return HomeResponseDTO.of(user, dailyMessage);
+		return HomeResponseDTO.of(user, dailyMessage, nearestSession);
 	}
 
 	private User findActiveUser(Long userId) {
