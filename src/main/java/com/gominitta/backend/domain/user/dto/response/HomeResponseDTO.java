@@ -1,8 +1,10 @@
 package com.gominitta.backend.domain.user.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.gominitta.backend.domain.dailymessage.entity.DailyMessage;
+import com.gominitta.backend.domain.session.entity.MindSession;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.entity.enums.ProfileIcon;
 
@@ -14,9 +16,9 @@ import lombok.Builder;
 public record HomeResponseDTO(
 	@Schema(description = "유저 정보") UserInfo user,
 	@Schema(description = "오늘의 한마디") DailyMessageInfo dailyMessage,
-	@Schema(description = "가장 가까운 마음세션 (미구현 시 null)") MindSessionInfo mindSession
+	@Schema(description = "가장 가까운 예정된 마음세션 (없으면 null)") MindSessionInfo mindSession
 ) {
-	public static HomeResponseDTO of(User user, DailyMessage dailyMessage) {
+	public static HomeResponseDTO of(User user, DailyMessage dailyMessage, Optional<MindSession> mindSession) {
 		return HomeResponseDTO.builder()
 			.user(UserInfo.builder()
 				.nickname(user.getNickname())
@@ -25,7 +27,12 @@ public record HomeResponseDTO(
 			.dailyMessage(DailyMessageInfo.builder()
 				.content(dailyMessage.getContent())
 				.build())
-			.mindSession(null) // TODO: mind_sessions 도메인 구현 후 실제 세션 데이터로 교체
+			.mindSession(mindSession.map(s -> MindSessionInfo.builder()
+				.sessionId(s.getMindSessionId())
+				.title(s.getWorryContent())
+				.status(s.getStatus().name())
+				.startedAt(s.getScheduledStartAt())
+				.build()).orElse(null))
 			.build();
 	}
 
@@ -44,8 +51,6 @@ public record HomeResponseDTO(
 	) {
 	}
 
-	// TODO: mind_sessions 도메인 구현 후 MindSessionRepository 쿼리 작성 및 매핑 필요
-	//  - 현재 시간 기준 가장 가까운 마음세션 1건 조회 후 아래 필드 매핑
 	@Builder
 	@Schema(description = "마음세션 정보")
 	public record MindSessionInfo(
