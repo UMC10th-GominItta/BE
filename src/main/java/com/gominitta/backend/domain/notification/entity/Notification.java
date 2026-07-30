@@ -47,17 +47,26 @@ public class Notification extends BaseEntity {
 	@Column(name = "read_at")
 	private LocalDateTime readAt;
 
+	@Column(name = "reference_id")
+	private Long referenceId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "reference_type", length = 20)
+	private ReferenceType referenceType;
+
 	@Builder
-	private Notification(Long userId, NotificationType type, String title, String body) {
+	private Notification(Long userId, NotificationType type, String title, String body,
+		Long referenceId, ReferenceType referenceType) {
 		this.userId = userId;
 		this.type = type;
 		this.title = title;
 		this.body = body;
+		this.referenceId = referenceId;
+		this.referenceType = referenceType;
 		this.isRead = false;
 		this.readAt = null;
 	}
 
-	// 읽음 처리
 	public void markAsRead() {
 		if (this.isRead) {
 			return;
@@ -66,7 +75,6 @@ public class Notification extends BaseEntity {
 		this.readAt = LocalDateTime.now();
 	}
 
-	// user 검증용
 	public boolean isOwnedBy(Long userId) {
 		return this.userId.equals(userId);
 	}
