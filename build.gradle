@@ -41,6 +41,9 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // AWS S3 (prod 파일 저장)
+    implementation 'software.amazon.awssdk:s3:2.29.22'
+
     // QueryDSL
 //    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
 //    annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'

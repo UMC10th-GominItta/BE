@@ -31,20 +31,16 @@ public class RecipeLog extends BaseEntity {
 	@Column(name = "recipe_id", nullable = false)
 	private Long recipeId;
 
-	@Column(name = "mind_sessions_id")
-	private Long mindSessionsId;
-
 	@Column(name = "executed_at")
 	private LocalDateTime executedAt;
 
 	@Column(name = "is_completed")
 	private Boolean isCompleted;
 
-	public static RecipeLog create(Long userId, Long recipeId, Long mindSessionsId, LocalDateTime executedAt) {
+	public static RecipeLog create(Long userId, Long recipeId, LocalDateTime executedAt) {
 		RecipeLog log = new RecipeLog();
 		log.userId = userId;
 		log.recipeId = recipeId;
-		log.mindSessionsId = mindSessionsId;
 		log.executedAt = executedAt;
 		log.isCompleted = false;
 		return log;
