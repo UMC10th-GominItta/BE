@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.gominitta.backend.domain.session.entity.MindSession;
 import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
+import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 
 public interface SessionRepository extends JpaRepository<MindSession, Long> {
 
@@ -17,4 +20,20 @@ public interface SessionRepository extends JpaRepository<MindSession, Long> {
 	// 세션 시작 알림 대상: 시작 예정 시각이 범위 안이고, 아직 SCHEDULED 상태인 세션
 	List<MindSession> findByScheduledStartAtBetweenAndStatus(
 		LocalDateTime start, LocalDateTime end, SessionStatus status);
+
+	@Query("SELECT s.themeCategory AS themeCategory, COUNT(s) AS count "
+		+ "FROM MindSession s "
+		+ "WHERE s.userId = :userId "
+		+ "AND s.themeCategory IS NOT NULL "
+		+ "AND s.isDeleted = false "
+		+ "AND s.createdAt >= :from "
+		+ "GROUP BY s.themeCategory")
+	List<ThemeCategoryCount> findThemeCategoryCounts(@Param("userId") Long userId,
+		@Param("from") LocalDateTime from);
+
+	interface ThemeCategoryCount {
+		ThemeCategory getThemeCategory();
+
+		long getCount();
+	}
 }
