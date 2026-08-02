@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.report.dto.response.AnxietyGapResponseDTO;
 import com.gominitta.backend.domain.report.dto.response.WorryThemeResponseDTO;
 import com.gominitta.backend.domain.report.dto.response.WorryThemeResponseDTO.ThemeCount;
 import com.gominitta.backend.domain.report.enums.PeriodType;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
+import com.gominitta.backend.domain.session.repository.SessionRepository.AnxietyGapAggregate;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,5 +35,16 @@ public class ReportService {
 			return WorryThemeResponseDTO.empty();
 		}
 		return WorryThemeResponseDTO.of(themes);
+	}
+
+	public AnxietyGapResponseDTO getAnxietyGap(Long userId, PeriodType period) {
+		LocalDateTime from = LocalDateTime.now().minusDays(period.getDays());
+
+		AnxietyGapAggregate agg = sessionRepository.findAnxietyGap(userId, from);
+
+		if (agg.getSessionCount() == 0 || agg.getAvgBefore() == null || agg.getAvgAfter() == null) {
+			return AnxietyGapResponseDTO.empty();
+		}
+		return AnxietyGapResponseDTO.of(agg.getAvgBefore(), agg.getAvgAfter());
 	}
 }

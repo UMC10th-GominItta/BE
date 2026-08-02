@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gominitta.backend.domain.notification.controller.CurrentUserProvider;
+import com.gominitta.backend.domain.report.dto.response.AnxietyGapResponseDTO;
 import com.gominitta.backend.domain.report.dto.response.WorryThemeResponseDTO;
 import com.gominitta.backend.domain.report.enums.PeriodType;
 import com.gominitta.backend.domain.report.service.ReportService;
@@ -28,5 +29,15 @@ public class ReportController {
 		PeriodType periodType = PeriodType.from(period);
 
 		return ApiResponse.success(reportService.getWorryThemes(userId, periodType));
+	}
+
+	@GetMapping("/anxiety-gap")
+	public ApiResponse<AnxietyGapResponseDTO> getAnxietyGap(
+		@RequestParam(defaultValue = "30d") String period) {
+
+		Long userId = CurrentUserProvider.getCurrentUserId();
+		PeriodType periodType = PeriodType.from(period);
+
+		return ApiResponse.success(reportService.getAnxietyGap(userId, periodType));
 	}
 }
