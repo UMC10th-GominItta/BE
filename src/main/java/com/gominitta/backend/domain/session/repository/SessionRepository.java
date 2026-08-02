@@ -36,4 +36,22 @@ public interface SessionRepository extends JpaRepository<MindSession, Long> {
 
 		long getCount();
 	}
+
+	@Query("SELECT AVG(s.emotionScoreBefore) AS avgBefore, "
+		+ "AVG(s.emotionScoreAfter) AS avgAfter, "
+		+ "COUNT(s) AS sessionCount "
+		+ "FROM MindSession s "
+		+ "WHERE s.userId = :userId "
+		+ "AND s.status = com.gominitta.backend.domain.session.entity.enums.SessionStatus.COMPLETED "
+		+ "AND s.isDeleted = false "
+		+ "AND s.completedAt >= :from")
+	AnxietyGapAggregate findAnxietyGap(@Param("userId") Long userId, @Param("from") LocalDateTime from);
+
+	interface AnxietyGapAggregate {
+		Double getAvgBefore();
+
+		Double getAvgAfter();
+
+		long getSessionCount();
+	}
 }
