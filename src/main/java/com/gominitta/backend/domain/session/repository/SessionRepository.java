@@ -54,4 +54,13 @@ public interface SessionRepository extends JpaRepository<MindSession, Long> {
 
 		long getSessionCount();
 	}
+
+	// 기간 내 모든 세션의 등록 시간 추출
+	@Query("SELECT s.createdAt "
+		+ "FROM MindSession s "
+		+ "WHERE s.userId = :userId "
+		+ "AND s.isDeleted = false "
+		+ "AND s.createdAt >= :from")
+	List<LocalDateTime> findCreatedAtsForTimeline(@Param("userId") Long userId,
+		@Param("from") LocalDateTime from);
 }
