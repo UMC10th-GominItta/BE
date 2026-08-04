@@ -64,14 +64,13 @@ public class MindSession extends BaseEntity {
 	@Column(name = "emotion_score_after")
 	private Integer emotionScoreAfter;
 
-	public static MindSession create(Long userId, Long worryId, String worryContent, ThemeCategory themeCategory,
+	public static MindSession create(Long userId, Long worryId, String worryContent,
 			Integer emotionScoreBefore, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
 		MindSession session = new MindSession();
 		session.userId = userId;
 		session.worryId = worryId;
 		session.status = SessionStatus.SCHEDULED;
 		session.worryContent = worryContent;
-		session.themeCategory = themeCategory;
 		session.emotionScoreBefore = emotionScoreBefore;
 		session.scheduledStartAt = scheduledStartAt;
 		session.scheduledEndAt = scheduledEndAt;

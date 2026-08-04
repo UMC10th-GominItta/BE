@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.exception.UserErrorCode;
@@ -44,8 +43,7 @@ public class WorryService {
         sessionService.createSessionForWorry(
                 worry.getId(), userId,
                 worry.getScheduledStartAt(), worry.getScheduledEndAt(),
-                worry.getContent(), ThemeCategory.CAREER,
-                worry.getEmotionScoreBefore()
+                worry.getContent(), worry.getEmotionScoreBefore()
         );
 
         return WorryResponseDTO.from(worry);
