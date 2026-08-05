@@ -14,10 +14,16 @@ public class RefreshTokenStore {
 
 	private static final String TOKEN_KEY_PREFIX = "refresh:";
 	private static final String USER_KEY_PREFIX = "user_refresh:";
+	private static final String DELETED_USER_KEY_PREFIX = "deleted_user:";
 
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public void save(String refreshToken, Long userId, Duration ttl) {
+		String oldToken = redisTemplate.opsForValue().get(USER_KEY_PREFIX + userId);
+		if (oldToken != null) {
+			redisTemplate.delete(TOKEN_KEY_PREFIX + oldToken);
+		}
+		redisTemplate.delete(DELETED_USER_KEY_PREFIX + userId);
 		redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + refreshToken, String.valueOf(userId), ttl);
 		redisTemplate.opsForValue().set(USER_KEY_PREFIX + userId, refreshToken, ttl);
 	}
@@ -48,5 +54,13 @@ public class RefreshTokenStore {
 		if (refreshToken != null) {
 			redisTemplate.delete(TOKEN_KEY_PREFIX + refreshToken);
 		}
+	}
+
+	public void markDeleted(Long userId, Duration ttl) {
+		redisTemplate.opsForValue().set(DELETED_USER_KEY_PREFIX + userId, "1", ttl);
+	}
+
+	public boolean isDeleted(Long userId) {
+		return Boolean.TRUE.equals(redisTemplate.hasKey(DELETED_USER_KEY_PREFIX + userId));
 	}
 }

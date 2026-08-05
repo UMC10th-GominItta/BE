@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final ObjectMapper objectMapper;
+	private final RefreshTokenStore refreshTokenStore;
 
 	@Override
 	protected void doFilterInternal(
@@ -39,6 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (StringUtils.hasText(token)) {
 			try {
 				Long userId = jwtUtil.extractUserId(token);
+				if (refreshTokenStore.isDeleted(userId)) {
+					writeErrorResponse(response, AuthErrorCode.DEACTIVATED_USER);
+					return;
+				}
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
 				SecurityContextHolder.getContext().setAuthentication(authentication);

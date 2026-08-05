@@ -1,8 +1,10 @@
 package com.gominitta.backend.domain.user.service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+	@Value("${jwt.access-token-expiration}")
+	private long accessTokenExpiration;
 
 	private final UserRepository userRepository;
 	private final DailyMessageService dailyMessageService;
@@ -56,6 +61,7 @@ public class UserService {
 	public void deleteMe(Long userId) {
 		User user = findActiveUser(userId);
 		refreshTokenRepository.deleteByUserId(userId);
+		refreshTokenRepository.markDeleted(userId, Duration.ofMillis(accessTokenExpiration));
 		user.deactivate();
 	}
 
