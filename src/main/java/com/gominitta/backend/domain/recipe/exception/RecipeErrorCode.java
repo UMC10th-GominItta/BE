@@ -14,6 +14,7 @@ public enum RecipeErrorCode implements BaseErrorCode {
 	// 403 Forbidden
 	RECIPE_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40301", "본인의 레시피만 수정할 수 있습니다."),
 	RECIPE_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40302", "본인의 레시피만 삭제할 수 있습니다."),
+	RECIPE_VIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40305", "본인의 레시피만 조회할 수 있습니다."),
 	RECIPE_LOG_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40303", "본인의 실행 기록만 처리할 수 있습니다."),
 	RECIPE_LOG_CREATE_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40304", "본인의 레시피만 실행할 수 있습니다."),
 

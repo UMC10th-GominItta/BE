@@ -37,13 +37,13 @@ public class RecipeController {
 
 	@Operation(
 		summary = "랜덤 시스템 레시피 조회",
-		description = "시스템 레시피 중 3개를 랜덤으로 반환합니다.",
+		description = "시스템 레시피 중 최대 3개를 랜덤으로 반환합니다. (이미 등록한 레시피는 제외)",
 		security = @SecurityRequirement(name = "bearerAuth")
 	)
 	@GetMapping("/random")
 	public ResponseEntity<ApiResponse<List<RecipeResponseDTO>>> getRandomRecipes() {
-		SecurityUtil.getCurrentUserId();
-		List<RecipeResponseDTO> data = recipeService.getRandomSystemRecipes();
+		Long userId = SecurityUtil.getCurrentUserId();
+		List<RecipeResponseDTO> data = recipeService.getRandomSystemRecipes(userId);
 		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
 	}
 
@@ -70,8 +70,8 @@ public class RecipeController {
 	public ResponseEntity<ApiResponse<RecipeResponseDTO>> getRecipe(
 		@PathVariable Long recipeId
 	) {
-		SecurityUtil.getCurrentUserId();
-		RecipeResponseDTO data = recipeService.getRecipe(recipeId);
+		Long userId = SecurityUtil.getCurrentUserId();
+		RecipeResponseDTO data = recipeService.getRecipe(userId, recipeId);
 		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
 	}
 
