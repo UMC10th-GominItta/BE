@@ -22,6 +22,7 @@ public enum AuthErrorCode implements BaseErrorCode {
 	EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_40104", "만료된 Access Token입니다."),
 	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_40105", "유효하지 않은 Refresh Token입니다."),
 	REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH_40106", "Refresh Token이 일치하지 않습니다."),
+	DEACTIVATED_USER(HttpStatus.UNAUTHORIZED, "AUTH_40107", "탈퇴한 사용자입니다."),
 
 	// 404 Not Found
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_40401", "사용자를 찾을 수 없습니다."),
