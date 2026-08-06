@@ -55,7 +55,7 @@ public class RecipeService {
 	public RecipeResponseDTO updateRecipe(Long userId, Long recipeId, RecipeUpdateRequestDTO request) {
 		Recipe recipe = findActiveRecipe(recipeId);
 
-		if (!recipe.getUserId().equals(userId)) {
+		if (recipe.getUserId() == null || !recipe.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_FORBIDDEN);
 		}
 
@@ -76,7 +76,7 @@ public class RecipeService {
 	public void deleteRecipe(Long userId, Long recipeId) {
 		Recipe recipe = findActiveRecipe(recipeId);
 
-		if (!recipe.getUserId().equals(userId)) {
+		if (recipe.getUserId() == null || !recipe.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_DELETE_FORBIDDEN);
 		}
 
