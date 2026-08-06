@@ -70,8 +70,8 @@ public class RecipeController {
 	public ResponseEntity<ApiResponse<RecipeResponseDTO>> getRecipe(
 		@PathVariable Long recipeId
 	) {
-		SecurityUtil.getCurrentUserId();
-		RecipeResponseDTO data = recipeService.getRecipe(recipeId);
+		Long userId = SecurityUtil.getCurrentUserId();
+		RecipeResponseDTO data = recipeService.getRecipe(userId, recipeId);
 		return ResponseEntity.ok(ApiResponse.success("요청이 성공했습니다.", data));
 	}
 

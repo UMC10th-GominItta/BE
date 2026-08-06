@@ -34,8 +34,13 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipeResponseDTO getRecipe(Long recipeId) {
+	public RecipeResponseDTO getRecipe(Long userId, Long recipeId) {
 		Recipe recipe = findActiveRecipe(recipeId);
+
+		if (recipe.getUserId() != null && !recipe.getUserId().equals(userId)) {
+			throw new GeneralException(RecipeErrorCode.RECIPE_VIEW_FORBIDDEN);
+		}
+
 		return RecipeResponseDTO.from(recipe);
 	}
 
