@@ -19,13 +19,13 @@ public record SessionRecordResponseDTO(
 	@Schema(description = "기록 생성 시각", example = "2026-05-27T22:10:00") LocalDateTime createdAt,
 	@Schema(description = "기록 수정 시각", example = "2026-05-27T22:40:00") LocalDateTime updatedAt
 ) {
-	public static SessionRecordResponseDTO from(SessionRecord record) {
+	public static SessionRecordResponseDTO from(SessionRecord record, String resolvedMediaUrl) {
 		return SessionRecordResponseDTO.builder()
 			.id(record.getSessionRecordId())
 			.sessionId(record.getSessionId())
 			.recordType(record.getRecordType())
 			.contentText(record.getContentText())
-			.mediaUrl(record.getMediaUrl())
+			.mediaUrl(resolvedMediaUrl)
 			.createdAt(record.getCreatedAt())
 			.updatedAt(record.getUpdatedAt())
 			.build();
