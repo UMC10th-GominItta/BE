@@ -1,6 +1,7 @@
 package com.gominitta.backend.global.storage;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,16 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 @Component
 @Profile("prod")
 public class S3FileStorage implements FileStorage {
+
+	private static final Duration URL_EXPIRY = Duration.ofMinutes(10);
 
 	@Value("${aws.s3.bucket}")
 	private String bucket;
@@ -30,12 +36,19 @@ public class S3FileStorage implements FileStorage {
 	private String region;
 
 	private S3Client s3Client;
+	private S3Presigner s3Presigner;
 
 	@PostConstruct
 	public void init() {
+		Region awsRegion = Region.of(region);
+		DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
 		this.s3Client = S3Client.builder()
-			.region(Region.of(region))
-			.credentialsProvider(DefaultCredentialsProvider.create())
+			.region(awsRegion)
+			.credentialsProvider(credentialsProvider)
+			.build();
+		this.s3Presigner = S3Presigner.builder()
+			.region(awsRegion)
+			.credentialsProvider(credentialsProvider)
 			.build();
 	}
 
@@ -54,10 +67,22 @@ public class S3FileStorage implements FileStorage {
 				RequestBody.fromInputStream(file.getInputStream(), file.getSize())
 			);
 
-			return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+			return key;
 		} catch (IOException | SdkException e) {
 			throw new GeneralException(RecordErrorCode.INTERNAL_ERROR);
 		}
+	}
+
+	@Override
+	public String resolveUrl(String mediaKey) {
+		if (mediaKey == null) {
+			return null;
+		}
+		GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+			.signatureDuration(URL_EXPIRY)
+			.getObjectRequest(GetObjectRequest.builder().bucket(bucket).key(mediaKey).build())
+			.build();
+		return s3Presigner.presignGetObject(presignRequest).url().toString();
 	}
 
 	private String extractExtension(String filename) {

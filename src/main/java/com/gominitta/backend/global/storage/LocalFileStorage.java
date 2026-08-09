@@ -13,8 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.gominitta.backend.domain.record.exception.RecordErrorCode;
 import com.gominitta.backend.global.common.exception.GeneralException;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
 @Profile("dev")
+@RequiredArgsConstructor
 public class LocalFileStorage implements FileStorage {
 
 	@Value("${file.upload-dir}")
@@ -22,6 +25,8 @@ public class LocalFileStorage implements FileStorage {
 
 	@Value("${file.base-url}")
 	private String baseUrl;
+
+	private final MediaUrlSigner mediaUrlSigner;
 
 	@Override
 	public String store(MultipartFile file, String subDir) {
@@ -34,10 +39,19 @@ public class LocalFileStorage implements FileStorage {
 
 			file.transferTo(dir.resolve(filename));
 
-			return baseUrl + "/" + subDir + "/" + filename;
+			return subDir + "/" + filename;
 		} catch (IOException e) {
 			throw new GeneralException(RecordErrorCode.INTERNAL_ERROR);
 		}
+	}
+
+	@Override
+	public String resolveUrl(String mediaKey) {
+		if (mediaKey == null) {
+			return null;
+		}
+		MediaUrlSigner.SignedQuery query = mediaUrlSigner.sign(mediaKey);
+		return baseUrl + "/" + mediaKey + "?exp=" + query.expiresAt() + "&sig=" + query.signature();
 	}
 
 	private String extractExtension(String filename) {

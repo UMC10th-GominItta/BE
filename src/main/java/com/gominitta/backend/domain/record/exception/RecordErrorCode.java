@@ -19,6 +19,7 @@ public enum RecordErrorCode implements BaseErrorCode {
 
 	// 403 Forbidden
 	FORBIDDEN(HttpStatus.FORBIDDEN, "RECORD_40301", "접근 권한이 없습니다."),
+	MEDIA_LINK_INVALID(HttpStatus.FORBIDDEN, "RECORD_40302", "만료되었거나 유효하지 않은 링크입니다."),
 
 	// 404 Not Found
 	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "RECORD_40401", "기록을 찾을 수 없습니다."),

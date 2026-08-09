@@ -52,7 +52,7 @@ public class RecordService {
 			: sessionRecordRepository.findBySessionIdAndRecordTypeOrderByCreatedAtAsc(
 				sessionId, parseRecordType(recordType));
 
-		return records.stream().map(SessionRecordResponseDTO::from).toList();
+		return records.stream().map(this::toResponse).toList();
 	}
 
 	@Transactional
@@ -72,7 +72,7 @@ public class RecordService {
 		}
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.TEXT, request.contentText(), null);
-		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
+		return toResponse(sessionRecordRepository.save(record));
 	}
 
 	@Transactional
@@ -90,10 +90,10 @@ public class RecordService {
 		}
 
 		String contentText = openAiSttClient.transcribe(file);
-		String mediaUrl = fileStorage.store(file, "voice");
+		String mediaKey = fileStorage.store(file, "voice");
 
-		SessionRecord record = SessionRecord.create(sessionId, RecordType.VOICE, contentText, mediaUrl);
-		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
+		SessionRecord record = SessionRecord.create(sessionId, RecordType.VOICE, contentText, mediaKey);
+		return toResponse(sessionRecordRepository.save(record));
 	}
 
 	@Transactional
@@ -111,10 +111,10 @@ public class RecordService {
 		}
 
 		String contentText = openAiOcrClient.extractText(file);
-		String mediaUrl = fileStorage.store(file, "handwriting");
+		String mediaKey = fileStorage.store(file, "handwriting");
 
-		SessionRecord record = SessionRecord.create(sessionId, RecordType.HANDWRITING, contentText, mediaUrl);
-		return SessionRecordResponseDTO.from(sessionRecordRepository.save(record));
+		SessionRecord record = SessionRecord.create(sessionId, RecordType.HANDWRITING, contentText, mediaKey);
+		return toResponse(sessionRecordRepository.save(record));
 	}
 
 	@Transactional
@@ -138,7 +138,7 @@ public class RecordService {
 
 		record.updateContent(request.contentText());
 		sessionRecordRepository.saveAndFlush(record);
-		return SessionRecordResponseDTO.from(record);
+		return toResponse(record);
 	}
 
 	@Transactional
@@ -153,6 +153,11 @@ public class RecordService {
 		}
 
 		sessionRecordRepository.delete(record);
+	}
+
+	private SessionRecordResponseDTO toResponse(SessionRecord record) {
+		String resolvedMediaUrl = record.getMediaUrl() == null ? null : fileStorage.resolveUrl(record.getMediaUrl());
+		return SessionRecordResponseDTO.from(record, resolvedMediaUrl);
 	}
 
 	private SessionRecord findRecordById(Long recordId) {
