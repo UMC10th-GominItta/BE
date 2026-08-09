@@ -34,6 +34,9 @@ public enum RecordErrorCode implements BaseErrorCode {
 	STT_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "RECORD_42201", "음성 변환에 실패했습니다."),
 	OCR_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "RECORD_42202", "문자 인식에 실패했습니다."),
 
+	// 429 Too Many Requests
+	RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "RECORD_42901", "너무 많은 요청입니다. 잠시 후 다시 시도해주세요."),
+
 	// 500 Internal Server Error
 	INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "RECORD_50001", "처리 중 서버 오류가 발생했습니다.");
 
