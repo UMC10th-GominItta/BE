@@ -43,6 +43,9 @@ file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads/records}
   base-url: ${FILE_BASE_URL:http://localhost:8080/media/records}
 
+media:
+  signing-secret: ${MEDIA_SIGNING_SECRET:local-dev-media-signing-secret-change-me}
+
 aws:
   s3:
     bucket: ${AWS_S3_BUCKET:}

@@ -19,6 +19,7 @@ public enum RecordErrorCode implements BaseErrorCode {
 
 	// 403 Forbidden
 	FORBIDDEN(HttpStatus.FORBIDDEN, "RECORD_40301", "접근 권한이 없습니다."),
+	MEDIA_LINK_INVALID(HttpStatus.FORBIDDEN, "RECORD_40302", "만료되었거나 유효하지 않은 링크입니다."),
 
 	// 404 Not Found
 	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "RECORD_40401", "기록을 찾을 수 없습니다."),
@@ -32,6 +33,9 @@ public enum RecordErrorCode implements BaseErrorCode {
 	// 422 Unprocessable Entity
 	STT_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "RECORD_42201", "음성 변환에 실패했습니다."),
 	OCR_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "RECORD_42202", "문자 인식에 실패했습니다."),
+
+	// 429 Too Many Requests
+	RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "RECORD_42901", "너무 많은 요청입니다. 잠시 후 다시 시도해주세요."),
 
 	// 500 Internal Server Error
 	INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "RECORD_50001", "처리 중 서버 오류가 발생했습니다.");

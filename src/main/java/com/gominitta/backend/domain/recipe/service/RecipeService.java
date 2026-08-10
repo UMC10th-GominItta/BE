@@ -2,6 +2,8 @@ package com.gominitta.backend.domain.recipe.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,13 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipeResponseDTO getRecipe(Long recipeId) {
+	public RecipeResponseDTO getRecipe(Long userId, Long recipeId) {
 		Recipe recipe = findActiveRecipe(recipeId);
+
+		if (recipe.getUserId() != null && !recipe.getUserId().equals(userId)) {
+			throw new GeneralException(RecipeErrorCode.RECIPE_VIEW_FORBIDDEN);
+		}
+
 		return RecipeResponseDTO.from(recipe);
 	}
 
@@ -50,7 +57,7 @@ public class RecipeService {
 	public RecipeResponseDTO updateRecipe(Long userId, Long recipeId, RecipeUpdateRequestDTO request) {
 		Recipe recipe = findActiveRecipe(recipeId);
 
-		if (!recipe.getUserId().equals(userId)) {
+		if (recipe.getUserId() == null || !recipe.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_FORBIDDEN);
 		}
 
@@ -71,7 +78,7 @@ public class RecipeService {
 	public void deleteRecipe(Long userId, Long recipeId) {
 		Recipe recipe = findActiveRecipe(recipeId);
 
-		if (!recipe.getUserId().equals(userId)) {
+		if (recipe.getUserId() == null || !recipe.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_DELETE_FORBIDDEN);
 		}
 
@@ -79,10 +86,16 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<RecipeResponseDTO> getRandomSystemRecipes() {
-		List<Recipe> recipes = new java.util.ArrayList<>(recipeRepository.findByUserIdIsNullAndIsDeletedFalse());
-		Collections.shuffle(recipes);
-		return recipes.stream()
+	public List<RecipeResponseDTO> getRandomSystemRecipes(Long userId) {
+		Set<String> myTitles = recipeRepository.findByUserIdAndIsDeletedFalse(userId).stream()
+			.map(Recipe::getTitle)
+			.collect(Collectors.toSet());
+
+		List<Recipe> candidates = recipeRepository.findByUserIdIsNullAndIsDeletedFalse().stream()
+			.filter(r -> !myTitles.contains(r.getTitle()))
+			.collect(Collectors.toList());
+		Collections.shuffle(candidates);
+		return candidates.stream()
 			.limit(3)
 			.map(RecipeResponseDTO::from)
 			.toList();
