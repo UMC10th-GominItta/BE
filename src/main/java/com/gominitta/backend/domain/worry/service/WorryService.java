@@ -43,7 +43,7 @@ public class WorryService {
         sessionService.createSessionForWorry(
                 worry.getId(), userId,
                 worry.getScheduledStartAt(), worry.getScheduledEndAt(),
-                // worry.getTitle(),
+                worry.getTitle(),
                 worry.getContent(), worry.getEmotionScoreBefore()
         );
 

@@ -84,12 +84,12 @@ public class SessionService {
 	 */
 	@Transactional
 	public Long createSessionForWorry(Long worryId, Long userId, LocalDateTime scheduledStartAt,
-			LocalDateTime scheduledEndAt, String worryContent, Integer emotionScoreBefore) {
+			LocalDateTime scheduledEndAt, String worryTitle, String worryContent, Integer emotionScoreBefore) {
 		if (sessionRepository.existsByWorryId(worryId)) {
 			throw new GeneralException(SessionErrorCode.SESSION_ALREADY_EXISTS);
 		}
 
-		MindSession session = MindSession.create(userId, worryId, worryContent,
+		MindSession session = MindSession.create(userId, worryId, worryTitle, worryContent,
 			emotionScoreBefore, scheduledStartAt, scheduledEndAt);
 		return sessionRepository.save(session).getMindSessionId();
 	}
@@ -119,7 +119,8 @@ public class SessionService {
 		}
 
 		SessionStatus parsed = parseStatus(status);
-		if (parsed != SessionStatus.SCHEDULED && parsed != SessionStatus.INCOMPLETE) {
+		if (parsed != SessionStatus.SCHEDULED && parsed != SessionStatus.INCOMPLETE
+			&& parsed != SessionStatus.COMPLETED) {
 			throw new GeneralException(SessionErrorCode.BAD_REQUEST);
 		}
 		return List.of(parsed);

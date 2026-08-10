@@ -36,7 +36,7 @@ public class SessionController {
 	@Operation(
 		summary = "세션 목록 조회",
 		description = "로그인한 유저의 예정된 세션과 미완료 세션 목록을 시작 시각 순으로 반환합니다. "
-			+ "status 파라미터로 scheduled/incomplete 중 하나만 필터링할 수 있습니다.",
+			+ "status 파라미터로 scheduled/incomplete/completed 중 하나만 필터링할 수 있습니다.",
 		security = @SecurityRequirement(name = "bearerAuth")
 	)
 	@GetMapping

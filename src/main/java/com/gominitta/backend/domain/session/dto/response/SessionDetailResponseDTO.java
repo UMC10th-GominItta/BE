@@ -17,6 +17,7 @@ import lombok.Builder;
 public record SessionDetailResponseDTO(
 	@Schema(description = "세션 ID", example = "1") Long id,
 	@Schema(description = "걱정 ID", example = "10") Long worryId,
+	@Schema(description = "걱정 제목 (스냅샷)", example = "취업 걱정") String worryTitle,
 	@Schema(description = "걱정 내용 (스냅샷)", example = "UMC 프론트가 안 구해지면 어떡하지") String worryContent,
 	@Schema(description = "걱정 주제", example = "진로") ThemeCategory themeCategory,
 	@Schema(description = "세션 상태", example = "scheduled") SessionStatus status,
@@ -32,6 +33,7 @@ public record SessionDetailResponseDTO(
 		return SessionDetailResponseDTO.builder()
 			.id(session.getMindSessionId())
 			.worryId(session.getWorryId())
+			.worryTitle(session.getWorryTitle())
 			.worryContent(session.getWorryContent())
 			.themeCategory(session.getThemeCategory())
 			.status(session.getStatus())
