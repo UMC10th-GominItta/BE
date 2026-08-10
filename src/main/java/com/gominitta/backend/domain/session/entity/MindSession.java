@@ -39,6 +39,9 @@ public class MindSession extends BaseEntity {
 	@Column(name = "status", nullable = false, length = 10)
 	private SessionStatus status;
 
+	@Column(name = "worry_title", nullable = false)
+	private String worryTitle;
+
 	@Column(name = "worry_content", nullable = false, columnDefinition = "TEXT")
 	private String worryContent;
 
@@ -64,12 +67,13 @@ public class MindSession extends BaseEntity {
 	@Column(name = "emotion_score_after")
 	private Integer emotionScoreAfter;
 
-	public static MindSession create(Long userId, Long worryId, String worryContent,
+	public static MindSession create(Long userId, Long worryId, String worryTitle, String worryContent,
 			Integer emotionScoreBefore, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
 		MindSession session = new MindSession();
 		session.userId = userId;
 		session.worryId = worryId;
 		session.status = SessionStatus.SCHEDULED;
+		session.worryTitle = worryTitle;
 		session.worryContent = worryContent;
 		session.emotionScoreBefore = emotionScoreBefore;
 		session.scheduledStartAt = scheduledStartAt;
