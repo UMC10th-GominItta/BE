@@ -17,6 +17,7 @@ import com.gominitta.backend.domain.session.entity.enums.SessionStatus;
 import com.gominitta.backend.domain.session.exception.SessionErrorCode;
 import com.gominitta.backend.domain.session.repository.SessionRepository;
 import com.gominitta.backend.global.common.exception.GeneralException;
+import com.gominitta.backend.global.storage.FileStorage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +30,7 @@ public class SessionService {
 
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
+	private final FileStorage fileStorage;
 
 	@Transactional(readOnly = true)
 	public List<SessionListResponseDTO> getSessions(Long userId, String status) {
@@ -46,7 +48,7 @@ public class SessionService {
 		}
 
 		List<SessionRecord> records = sessionRecordRepository.findBySessionIdOrderByCreatedAtAsc(sessionId);
-		return SessionDetailResponseDTO.of(session, records);
+		return SessionDetailResponseDTO.of(session, records, fileStorage::resolveUrl);
 	}
 
 	@Transactional
