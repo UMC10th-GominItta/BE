@@ -11,7 +11,12 @@ import java.time.LocalDateTime;
 @Builder
 @Schema(description = "걱정 생성 요청")
 public record WorryCreateRequestDTO(
-        @Schema(description = "걱정 내용", example = "UMC 프론트가 안 구해지면 어쩌지")
+
+        @Schema(description = "걱정 제목", example = "UMC 프론트가 안 구해지면 어쩌지")
+        @NotBlank
+        String title,
+
+        @Schema(description = "걱정 내용", example = "걱정걱정걱정")
         @NotBlank
         String content,
 
