@@ -9,6 +9,7 @@ import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.exception.UserErrorCode;
 import com.gominitta.backend.domain.user.repository.UserRepository;
+import com.gominitta.backend.domain.worry.dto.request.WorryContentRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryCreateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryUpdateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.response.WorryDetailResponseDTO;
@@ -78,6 +79,18 @@ public class WorryService {
             throw new GeneralException(WorryErrorCode.FORBIDDEN);
         }
         worry.update(request.title(),request.content(), request.scheduledStartAt(), request.scheduledEndAt());
+        return WorryResponseDTO.from(worry);
+    }
+
+    @Transactional
+    public WorryResponseDTO addContent(Long worryId, WorryContentRequestDTO request) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        Worry worry = worryRepository.findById(worryId)
+                .orElseThrow(() -> new GeneralException(WorryErrorCode.WORRY_NOT_FOUND));
+        if (!worry.getUser().getId().equals(userId)) {
+            throw new GeneralException(WorryErrorCode.FORBIDDEN);
+        }
+        worry.appendContent(request.content());
         return WorryResponseDTO.from(worry);
     }
 

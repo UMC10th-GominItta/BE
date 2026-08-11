@@ -60,4 +60,8 @@ public class Worry extends BaseEntity {
     public void delete() {
         softDelete();
     }
+
+    public void appendContent(String content) {
+        if(content != null) this.content = this.content + "\n" + content;
+    }
 }
