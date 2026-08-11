@@ -13,6 +13,9 @@ public record WorryDetailResponseDTO (
         @Schema(description = "걱정 Id")
         Long id,
 
+        @Schema(description = "걱정 제목")
+        String title,
+
         @Schema(description = "걱정 내용")
         String content,
 
@@ -30,6 +33,7 @@ public record WorryDetailResponseDTO (
     public static WorryDetailResponseDTO from(Worry worry){
         return WorryDetailResponseDTO.builder()
                 .id(worry.getId())
+                .title(worry.getTitle())
                 .content(worry.getContent())
                 .emotionScoreBefore(worry.getEmotionScoreBefore())
                 .scheduledStartAt(worry.getScheduledStartAt())

@@ -1,5 +1,6 @@
 package com.gominitta.backend.domain.worry.controller;
 
+import com.gominitta.backend.domain.worry.dto.request.WorryContentRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryCreateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryUpdateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.response.WorryDetailResponseDTO;
@@ -38,6 +39,11 @@ public class WorryController {
     @PatchMapping("/{worryId}")
     public ResponseEntity<ApiResponse<WorryResponseDTO>> updateWorry(@PathVariable Long worryId, @Valid @RequestBody WorryUpdateRequestDTO request) {
         return ResponseEntity.ok(ApiResponse.success(worryService.updateWorry(worryId, request)));
+    }
+
+    @PostMapping("/{worryId}/contents")
+    public ResponseEntity<ApiResponse<WorryResponseDTO>> addContent(@PathVariable Long worryId, @Valid @RequestBody WorryContentRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.success(worryService.addContent(worryId, request)));
     }
 
     @DeleteMapping("/{worryId}")

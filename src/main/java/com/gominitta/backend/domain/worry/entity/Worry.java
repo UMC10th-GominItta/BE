@@ -23,6 +23,9 @@ public class Worry extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private LocalDateTime scheduledStartAt;
 
     @Column(nullable = false)
@@ -35,10 +38,11 @@ public class Worry extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static Worry create(User user, String content, Integer emotionScoreBefore,
+    public static Worry create(User user, String title, String content, Integer emotionScoreBefore,
                                LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
         Worry worry = new Worry();
         worry.user = user;
+        worry.title = title;
         worry.content = content;
         worry.emotionScoreBefore = emotionScoreBefore;
         worry.scheduledStartAt = scheduledStartAt;
@@ -46,9 +50,18 @@ public class Worry extends BaseEntity {
         return worry;
     }
 
-    public void update(String content, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
+    public void update(String title, String content, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
+        if (title!=null) this.title = title;
         if (content != null) this.content = content;
         if (scheduledStartAt != null) this.scheduledStartAt = scheduledStartAt;
         if (scheduledEndAt != null) this.scheduledEndAt = scheduledEndAt;
+    }
+
+    public void delete() {
+        softDelete();
+    }
+
+    public void appendContent(String content) {
+        if(content != null) this.content = this.content + "\n" + content;
     }
 }

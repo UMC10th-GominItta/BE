@@ -9,6 +9,7 @@ import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.exception.UserErrorCode;
 import com.gominitta.backend.domain.user.repository.UserRepository;
+import com.gominitta.backend.domain.worry.dto.request.WorryContentRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryCreateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryUpdateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.response.WorryDetailResponseDTO;
@@ -35,7 +36,7 @@ public class WorryService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new GeneralException(UserErrorCode.USER_NOT_FOUND));
 
-        Worry worry = Worry.create(user, request.content(), request.emotionScoreBefore(),
+        Worry worry = Worry.create(user, request.title() ,request.content(), request.emotionScoreBefore(),
                 request.scheduledStartAt(), request.scheduledEndAt());
         worryRepository.save(worry);
 
@@ -43,6 +44,7 @@ public class WorryService {
         sessionService.createSessionForWorry(
                 worry.getId(), userId,
                 worry.getScheduledStartAt(), worry.getScheduledEndAt(),
+                worry.getTitle(),
                 worry.getContent(), worry.getEmotionScoreBefore()
         );
 
@@ -76,7 +78,19 @@ public class WorryService {
         if (!worry.getUser().getId().equals(userId)) {
             throw new GeneralException(WorryErrorCode.FORBIDDEN);
         }
-        worry.update(request.content(), request.scheduledStartAt(), request.scheduledEndAt());
+        worry.update(request.title(),request.content(), request.scheduledStartAt(), request.scheduledEndAt());
+        return WorryResponseDTO.from(worry);
+    }
+
+    @Transactional
+    public WorryResponseDTO addContent(Long worryId, WorryContentRequestDTO request) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        Worry worry = worryRepository.findById(worryId)
+                .orElseThrow(() -> new GeneralException(WorryErrorCode.WORRY_NOT_FOUND));
+        if (!worry.getUser().getId().equals(userId)) {
+            throw new GeneralException(WorryErrorCode.FORBIDDEN);
+        }
+        worry.appendContent(request.content());
         return WorryResponseDTO.from(worry);
     }
 
@@ -88,7 +102,7 @@ public class WorryService {
         if (!worry.getUser().getId().equals(userId)) {
             throw new GeneralException(WorryErrorCode.FORBIDDEN);
         }
-        worryRepository.delete(worry);
+        worry.delete();
         return WorryResponseDTO.from(worry);
     }
 }
