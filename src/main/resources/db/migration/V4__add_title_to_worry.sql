@@ -1,0 +1,2 @@
+ALTER TABLE worry
+    ADD COLUMN title VARCHAR(255) NOT NULL DEFAULT '' AFTER content;
