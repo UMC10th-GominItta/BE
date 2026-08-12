@@ -26,7 +26,7 @@ public class RecipeService {
 
 	@Transactional(readOnly = true)
 	public List<RecipeResponseDTO> getRecipes(Long userId, String scope) {
-		if (!scope.equals("mine") && !scope.equals("system")) {
+		if (scope == null || (!scope.equals("mine") && !scope.equals("system"))) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_INVALID_SCOPE);
 		}
 		List<Recipe> recipes = switch (scope) {
@@ -65,9 +65,15 @@ public class RecipeService {
 		}
 
 		if (request.title() != null) {
+			if (request.title().isBlank()) {
+				throw new GeneralException(RecipeErrorCode.RECIPE_INVALID_TITLE);
+			}
 			recipe.updateTitle(request.title());
 		}
 		if (request.description() != null) {
+			if (request.description().isBlank()) {
+				throw new GeneralException(RecipeErrorCode.RECIPE_INVALID_DESCRIPTION);
+			}
 			recipe.updateDescription(request.description());
 		}
 		if (request.estimatedMinutes() != null) {
