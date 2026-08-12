@@ -39,7 +39,8 @@ public class FavoriteTime extends BaseEntity {
         favoriteTime.endTime = endTime;
         return favoriteTime;
     }
-    public void update(LocalTime startTime, LocalTime endTime) {
+    public void update(String label,LocalTime startTime, LocalTime endTime) {
+        if (label != null) this.label = label;
         if (startTime != null) this.startTime = startTime;
         if (endTime != null) this.endTime = endTime;
     }

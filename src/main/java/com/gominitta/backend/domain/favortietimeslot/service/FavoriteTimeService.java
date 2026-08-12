@@ -57,7 +57,7 @@ public class FavoriteTimeService {
         if (!favoriteTime.getUser().getId().equals(userId)) {
             throw new GeneralException(FavoriteTimeErrorCode.FORBIDDEN);
         }
-        favoriteTime.update(request.getStartTime(), request.getEndTime());
+        favoriteTime.update(request.getLabel() , request.getStartTime(), request.getEndTime());
         return FavoriteTimeResponseDTO.from(favoriteTime);
     }
 
