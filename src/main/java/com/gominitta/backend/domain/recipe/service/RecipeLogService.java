@@ -35,6 +35,10 @@ public class RecipeLogService {
 			throw new GeneralException(RecipeErrorCode.RECIPE_LOG_CREATE_FORBIDDEN);
 		}
 
+		recipeLogRepository
+			.findByUserIdAndRecipeIdAndIsCompletedFalseAndIsDeletedFalse(userId, request.recipeId())
+			.forEach(RecipeLog::cancel);
+
 		RecipeLog log = RecipeLog.create(
 			userId,
 			request.recipeId(),
@@ -52,7 +56,7 @@ public class RecipeLogService {
 		if (!log.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_LOG_FORBIDDEN);
 		}
-		if (log.getIsCompleted()) {
+		if (Boolean.TRUE.equals(log.getIsCompleted())) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_LOG_ALREADY_COMPLETED);
 		}
 

@@ -20,4 +20,6 @@ public interface RecipeLogRepository extends JpaRepository<RecipeLog, Long> {
 
 	long countByUserIdAndIsCompletedTrueAndIsDeletedFalseAndExecutedAtBetween(
 		Long userId, LocalDateTime start, LocalDateTime end);
+
+	List<RecipeLog> findByUserIdAndRecipeIdAndIsCompletedFalseAndIsDeletedFalse(Long userId, Long recipeId);
 }
