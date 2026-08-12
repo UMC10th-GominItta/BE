@@ -26,6 +26,9 @@ public class RecipeService {
 
 	@Transactional(readOnly = true)
 	public List<RecipeResponseDTO> getRecipes(Long userId, String scope) {
+		if (!scope.equals("mine") && !scope.equals("system")) {
+			throw new GeneralException(RecipeErrorCode.RECIPE_INVALID_SCOPE);
+		}
 		List<Recipe> recipes = switch (scope) {
 			case "system" -> recipeRepository.findByUserIdIsNullAndIsDeletedFalse();
 			default -> recipeRepository.findByUserIdAndIsDeletedFalse(userId);
@@ -76,7 +79,12 @@ public class RecipeService {
 
 	@Transactional
 	public void deleteRecipe(Long userId, Long recipeId) {
-		Recipe recipe = findActiveRecipe(recipeId);
+		Recipe recipe = recipeRepository.findById(recipeId)
+			.orElseThrow(() -> new GeneralException(RecipeErrorCode.RECIPE_NOT_FOUND));
+
+		if (recipe.isDeleted()) {
+			throw new GeneralException(RecipeErrorCode.RECIPE_ALREADY_DELETED);
+		}
 
 		if (recipe.getUserId() == null || !recipe.getUserId().equals(userId)) {
 			throw new GeneralException(RecipeErrorCode.RECIPE_DELETE_FORBIDDEN);

@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RecipeErrorCode implements BaseErrorCode {
 
+	// 400 Bad Request
+	RECIPE_INVALID_SCOPE(HttpStatus.BAD_REQUEST, "RECIPE_40001", "scope는 mine 또는 system만 허용됩니다."),
+
 	// 403 Forbidden
 	RECIPE_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40301", "본인의 레시피만 수정할 수 있습니다."),
 	RECIPE_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "RECIPE_40302", "본인의 레시피만 삭제할 수 있습니다."),
