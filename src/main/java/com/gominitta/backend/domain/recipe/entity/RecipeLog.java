@@ -49,4 +49,8 @@ public class RecipeLog extends BaseEntity {
 	public void complete() {
 		this.isCompleted = true;
 	}
+
+	public void cancel() {
+		softDelete();
+	}
 }
