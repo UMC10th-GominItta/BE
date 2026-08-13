@@ -154,7 +154,7 @@ public class RecordService {
 		if (!session.getUserId().equals(userId)) {
 			throw new GeneralException(RecordErrorCode.FORBIDDEN);
 		}
-		if (request.contentText() == null || request.contentText().isBlank()) {
+		if (request.contentText() == null) {
 			throw new GeneralException(RecordErrorCode.EMPTY_CONTENT);
 		}
 		if (request.contentText().length() > MAX_CONTENT_LENGTH) {

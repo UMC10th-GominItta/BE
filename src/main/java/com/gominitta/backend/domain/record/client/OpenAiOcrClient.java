@@ -71,6 +71,7 @@ public class OpenAiOcrClient {
 		try {
 			Map<String, Object> body = Map.of(
 				"model", model,
+				"temperature", 0,
 				"messages", List.of(
 					Map.of(
 						"role", "user",
