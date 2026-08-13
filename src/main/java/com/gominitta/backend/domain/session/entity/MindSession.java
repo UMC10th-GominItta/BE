@@ -68,7 +68,8 @@ public class MindSession extends BaseEntity {
 	private Integer emotionScoreAfter;
 
 	public static MindSession create(Long userId, Long worryId, String worryTitle, String worryContent,
-			Integer emotionScoreBefore, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt) {
+			Integer emotionScoreBefore, LocalDateTime scheduledStartAt, LocalDateTime scheduledEndAt,
+			ThemeCategory themeCategory) {
 		MindSession session = new MindSession();
 		session.userId = userId;
 		session.worryId = worryId;
@@ -78,6 +79,7 @@ public class MindSession extends BaseEntity {
 		session.emotionScoreBefore = emotionScoreBefore;
 		session.scheduledStartAt = scheduledStartAt;
 		session.scheduledEndAt = scheduledEndAt;
+		session.themeCategory = themeCategory;
 		return session;
 	}
 
