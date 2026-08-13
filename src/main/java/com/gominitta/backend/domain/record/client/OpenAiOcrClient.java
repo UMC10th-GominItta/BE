@@ -23,8 +23,13 @@ import jakarta.annotation.PostConstruct;
 public class OpenAiOcrClient {
 
 	private static final String CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
+	private static final String UNREADABLE_SENTINEL = "[판독불가]";
 	private static final String EXTRACTION_PROMPT =
-		"이 이미지에 있는 손글씨 텍스트를 그대로 추출해서 반환해. 다른 설명 없이 인식된 텍스트만 출력해.";
+		"이 이미지에 있는 손글씨 텍스트를 그대로 추출해서 반환해. 다른 설명 없이 인식된 텍스트만 출력해. "
+			+ "이미지에 없는 내용을 추측하거나 지어내지 마. "
+			+ "글씨가 없거나, 읽을 수 없을 정도로 흐릿하거나 애매하면 다른 텍스트를 만들어내지 말고 정확히 \""
+			+ UNREADABLE_SENTINEL + "\" 라고만 출력해.";
+	private static final int MAX_ATTEMPTS = 2;
 
 	@Value("${openai.api-key}")
 	private String apiKey;
@@ -43,10 +48,27 @@ public class OpenAiOcrClient {
 	}
 
 	public String extractText(MultipartFile file) {
+		String dataUri;
 		try {
-			String dataUri = "data:" + file.getContentType() + ";base64,"
+			dataUri = "data:" + file.getContentType() + ";base64,"
 				+ Base64.getEncoder().encodeToString(file.getBytes());
+		} catch (IOException ex) {
+			throw new GeneralException(RecordErrorCode.OCR_FAILED);
+		}
 
+		String text = null;
+		for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+			text = requestExtraction(dataUri);
+			if (isUsableText(text)) {
+				return text;
+			}
+		}
+
+		throw new GeneralException(RecordErrorCode.OCR_FAILED);
+	}
+
+	private String requestExtraction(String dataUri) {
+		try {
 			Map<String, Object> body = Map.of(
 				"model", model,
 				"messages", List.of(
@@ -68,16 +90,14 @@ public class OpenAiOcrClient {
 				.retrieve()
 				.body(OpenAiChatCompletionResponseDTO.class);
 
-			String text = extractContent(response);
-			if (text == null || text.isBlank()) {
-				throw new GeneralException(RecordErrorCode.OCR_FAILED);
-			}
-			return text;
-		} catch (GeneralException ex) {
-			throw ex;
-		} catch (IOException | RestClientException ex) {
-			throw new GeneralException(RecordErrorCode.OCR_FAILED);
+			return extractContent(response);
+		} catch (RestClientException ex) {
+			return null;
 		}
+	}
+
+	private boolean isUsableText(String text) {
+		return text != null && !text.isBlank() && !text.trim().equals(UNREADABLE_SENTINEL);
 	}
 
 	private String extractContent(OpenAiChatCompletionResponseDTO response) {
