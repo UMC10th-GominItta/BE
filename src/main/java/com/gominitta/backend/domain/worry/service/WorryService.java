@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gominitta.backend.domain.session.entity.enums.ThemeCategory;
 import com.gominitta.backend.domain.session.service.SessionService;
 import com.gominitta.backend.domain.user.entity.User;
 import com.gominitta.backend.domain.user.exception.UserErrorCode;
 import com.gominitta.backend.domain.user.repository.UserRepository;
+import com.gominitta.backend.domain.worry.client.OpenAiCategoryClient;
 import com.gominitta.backend.domain.worry.dto.request.WorryContentRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryCreateRequestDTO;
 import com.gominitta.backend.domain.worry.dto.request.WorryUpdateRequestDTO;
@@ -29,6 +31,7 @@ public class WorryService {
     private final WorryRepository worryRepository;
     private final UserRepository userRepository;
     private final SessionService sessionService;
+    private final OpenAiCategoryClient openAiCategoryClient;
 
     @Transactional
     public WorryResponseDTO createWorry(WorryCreateRequestDTO request) {
@@ -40,12 +43,13 @@ public class WorryService {
                 request.scheduledStartAt(), request.scheduledEndAt());
         worryRepository.save(worry);
 
-        // TODO: AI 임베딩으로 themeCategory 자동 분류 예정
+        ThemeCategory themeCategory = openAiCategoryClient.classify(worry.getTitle(), worry.getContent());
         sessionService.createSessionForWorry(
                 worry.getId(), userId,
                 worry.getScheduledStartAt(), worry.getScheduledEndAt(),
                 worry.getTitle(),
-                worry.getContent(), worry.getEmotionScoreBefore()
+                worry.getContent(), worry.getEmotionScoreBefore(),
+                themeCategory
         );
 
         return WorryResponseDTO.from(worry);
