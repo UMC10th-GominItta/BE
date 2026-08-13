@@ -21,6 +21,9 @@ import jakarta.annotation.PostConstruct;
 public class OpenAiSttClient {
 
 	private static final String TRANSCRIPTION_URL = "https://api.openai.com/v1/audio/transcriptions";
+	private static final String LANGUAGE = "ko";
+	private static final String CONTEXT_PROMPT = "걱정, 마음, 감정에 대해 이야기하는 개인 음성 기록입니다.";
+	private static final int MAX_ATTEMPTS = 2;
 
 	@Value("${openai.api-key}")
 	private String apiKey;
@@ -39,10 +42,25 @@ public class OpenAiSttClient {
 	}
 
 	public String transcribe(MultipartFile file) {
+		String text = null;
+		for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+			text = requestTranscription(file);
+			if (text != null && !text.isBlank()) {
+				return text;
+			}
+		}
+
+		throw new GeneralException(RecordErrorCode.STT_FAILED);
+	}
+
+	private String requestTranscription(MultipartFile file) {
 		try {
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			body.add("file", file.getResource());
 			body.add("model", model);
+			body.add("language", LANGUAGE);
+			body.add("prompt", CONTEXT_PROMPT);
+			body.add("temperature", 0);
 
 			OpenAiTranscriptionResponseDTO response = restClient.post()
 				.uri(TRANSCRIPTION_URL)
@@ -52,14 +70,9 @@ public class OpenAiSttClient {
 				.retrieve()
 				.body(OpenAiTranscriptionResponseDTO.class);
 
-			if (response == null || response.text() == null || response.text().isBlank()) {
-				throw new GeneralException(RecordErrorCode.STT_FAILED);
-			}
-			return response.text();
-		} catch (GeneralException ex) {
-			throw ex;
+			return response == null ? null : response.text();
 		} catch (RestClientException ex) {
-			throw new GeneralException(RecordErrorCode.STT_FAILED);
+			return null;
 		}
 	}
 }

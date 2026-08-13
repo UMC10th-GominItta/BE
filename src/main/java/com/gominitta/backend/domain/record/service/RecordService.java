@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.gominitta.backend.domain.record.client.OpenAiOcrClient;
+import com.gominitta.backend.domain.record.client.GoogleVisionOcrClient;
 import com.gominitta.backend.domain.record.client.OpenAiSttClient;
 import com.gominitta.backend.domain.record.dto.request.RecordUpdateRequestDTO;
 import com.gominitta.backend.domain.record.dto.request.TextRecordCreateRequestDTO;
@@ -52,7 +52,7 @@ public class RecordService {
 	private final SessionRepository sessionRepository;
 	private final SessionRecordRepository sessionRecordRepository;
 	private final OpenAiSttClient openAiSttClient;
-	private final OpenAiOcrClient openAiOcrClient;
+	private final GoogleVisionOcrClient googleVisionOcrClient;
 	private final FileStorage fileStorage;
 	private final RateLimiter rateLimiter;
 
@@ -135,7 +135,7 @@ public class RecordService {
 			throw new GeneralException(SessionErrorCode.RECORDING_NOT_ALLOWED);
 		}
 
-		String contentText = openAiOcrClient.extractText(file);
+		String contentText = googleVisionOcrClient.extractText(file);
 		String mediaKey = fileStorage.store(file, "handwriting");
 
 		SessionRecord record = SessionRecord.create(sessionId, RecordType.HANDWRITING, contentText, mediaKey);
@@ -154,7 +154,7 @@ public class RecordService {
 		if (!session.getUserId().equals(userId)) {
 			throw new GeneralException(RecordErrorCode.FORBIDDEN);
 		}
-		if (request.contentText() == null || request.contentText().isBlank()) {
+		if (request.contentText() == null) {
 			throw new GeneralException(RecordErrorCode.EMPTY_CONTENT);
 		}
 		if (request.contentText().length() > MAX_CONTENT_LENGTH) {
