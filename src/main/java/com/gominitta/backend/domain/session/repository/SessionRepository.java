@@ -55,12 +55,12 @@ public interface SessionRepository extends JpaRepository<MindSession, Long> {
 		long getSessionCount();
 	}
 
-	// 기간 내 모든 세션의 예약 시작 시각 추출
-	@Query("SELECT s.scheduledStartAt "
+	// 기간 내 모든 세션의 걱정 작성 시각 추출 (타임라인 집계 기준: 걱정을 예약한 시각 = createdAt)
+	@Query("SELECT s.createdAt "
 		+ "FROM MindSession s "
 		+ "WHERE s.userId = :userId "
 		+ "AND s.isDeleted = false "
-		+ "AND s.scheduledStartAt >= :from")
-	List<LocalDateTime> findScheduledStartAtsForTimeline(@Param("userId") Long userId,
+		+ "AND s.createdAt >= :from")
+	List<LocalDateTime> findCreatedAtsForTimeline(@Param("userId") Long userId,
 		@Param("from") LocalDateTime from);
 }

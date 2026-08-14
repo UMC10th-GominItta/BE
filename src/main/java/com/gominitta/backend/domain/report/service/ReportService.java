@@ -57,15 +57,15 @@ public class ReportService {
 
 	public WorryTimelineResponseDTO getWorryTimeline(Long userId, PeriodType period) {
 		LocalDateTime from = LocalDateTime.now().minusDays(period.getDays());
-		List<LocalDateTime> scheduledStartAts = sessionRepository.findScheduledStartAtsForTimeline(userId, from);
+		List<LocalDateTime> createdAts = sessionRepository.findCreatedAtsForTimeline(userId, from);
 
-		if (scheduledStartAts.isEmpty()) {
+		if (createdAts.isEmpty()) {
 			return WorryTimelineResponseDTO.empty();
 		}
 
 		// (요일, 시간대) → count 집계
 		Map<String, Long> counter = new LinkedHashMap<>();
-		for (LocalDateTime dt : scheduledStartAts) {
+		for (LocalDateTime dt : createdAts) {
 			String key = dt.getDayOfWeek().name() + "|" + TimeSlot.from(dt.getHour()).name();
 			counter.merge(key, 1L, Long::sum);
 		}
